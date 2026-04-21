@@ -147,9 +147,11 @@ import { TREE } from '../../content/data/file-explorer-nodes.ts';
 
 **生产端**（腾讯云轻量服务器，Ubuntu 22.04）：
 
+- 服务器 IP：`124.222.23.162`，SSH 用户：`ubuntu`
+- 教程站运行在 **8080 端口**（80 端口被 AI 资讯平台占用）
+- 项目路径：`/var/www/ai-coding-for-beginners`
 - Nginx 直接服务 `dist/` 目录，无需 reload
-- Phase 1 手动部署：SSH 进去 → `git pull && npm ci && npm run build`
-- Phase 2 起用 `scripts/deploy-remote.sh` 一键部署
+- **日常部署**：`npm run deploy`（本地 commit 后运行，自动 push + 远程构建）
 
 ---
 
