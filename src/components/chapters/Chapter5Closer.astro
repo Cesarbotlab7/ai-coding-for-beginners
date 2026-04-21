@@ -1,0 +1,17 @@
+---
+// 第5章专用 ChapterCloser，数据内嵌
+import ChapterCloser from '../ChapterCloser.astro';
+
+const takeaways = [
+  '服务器就是一台永远开着、接在互联网上的电脑——不是黑科技，就是这样。',
+  '小项目用平台托管（Vercel/Supabase）就够了，月费可以接近零。',
+  '"服务器很贵"是都市传说——要看你做什么规模、选什么平台。',
+  '"部署"这个词不神秘，就是把你的代码放到那台永远开着的电脑上。',
+];
+
+const quote = {
+  text: '以前我以为服务器是个吃钱巨兽。后来发现我在用的服务器，一个月的电费还没我喝的一杯咖啡贵。',
+  attribution: '不是在说服你省钱，是在说服你别被"服务器"三个字吓退',
+};
+---
+<ChapterCloser takeaways={takeaways} quote={quote} />

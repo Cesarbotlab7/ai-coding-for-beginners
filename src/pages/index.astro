@@ -1,0 +1,171 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allChapters = await getCollection('chapters');
+const chapters = allChapters.sort((a, b) => {
+  if (a.data.stage !== b.data.stage) return a.data.stage - b.data.stage;
+  return a.data.order - b.data.order;
+});
+
+const stageLabels: Record<number, string> = {
+  0: '引子',
+  1: '阶段一·地图',
+  2: '阶段二·玩家',
+  3: '阶段三·动手',
+};
+
+const stages = [0, 1, 2, 3];
+---
+<BaseLayout title="AI编程入门">
+  <main class="home">
+    <section class="hero">
+      <h1 class="hero-title">AI 编程入门</h1>
+      <p class="tagline">写给完全不会写代码、但很想用 AI 做产品的你</p>
+      <p class="sub">
+        一个金融背景的非科班，用 Claude Code 自学做产品的过程中，
+        写下的 10 章入门教程。每章都有可以动手玩的交互。
+      </p>
+    </section>
+
+    <section class="curriculum">
+      {stages.map(stage => {
+        const stageChapters = chapters.filter(c => c.data.stage === stage);
+        if (stageChapters.length === 0) return null;
+        return (
+          <div class="stage-group">
+            <h2 class="stage-label">{stageLabels[stage]}</h2>
+            <div class="chapter-cards">
+              {stageChapters.map(ch => (
+                <a href={`/chapter/${ch.data.slug}`} class="chapter-card">
+                  <span class="chapter-num">第 {ch.data.order} 章</span>
+                  <h3 class="chapter-title">{ch.data.title}</h3>
+                  <p class="chapter-summary">{ch.data.summary}</p>
+                  {ch.data.estimated_reading_minutes && (
+                    <span class="chapter-meta">约 {ch.data.estimated_reading_minutes} 分钟</span>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </section>
+
+    <footer class="about">
+      <p>作者：一个用 AI 自学做产品的金融背景小白 · 杭州</p>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  .home {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: var(--space-7) var(--space-5);
+  }
+
+  .hero {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-7);
+    border-bottom: 0.5px solid var(--color-border);
+  }
+
+  .hero-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-medium);
+    margin: 0 0 var(--space-4);
+  }
+
+  .tagline {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-3);
+    line-height: 1.5;
+  }
+
+  .sub {
+    font-size: var(--text-base);
+    color: var(--color-text-tertiary);
+    margin: 0;
+    line-height: 1.75;
+  }
+
+  .curriculum {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+
+  .stage-label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 var(--space-4);
+  }
+
+  .chapter-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .chapter-card {
+    display: block;
+    padding: var(--space-5);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    background: var(--color-bg-primary);
+    transition: background-color 0.12s;
+  }
+
+  .chapter-card:hover {
+    background: var(--color-bg-secondary);
+  }
+
+  .chapter-num {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+  }
+
+  .chapter-title {
+    font-size: var(--text-md);
+    font-weight: var(--font-medium);
+    margin: var(--space-2) 0;
+  }
+
+  .chapter-summary {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-2);
+    line-height: 1.6;
+  }
+
+  .chapter-meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .about {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 0.5px solid var(--color-border);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .about p {
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .home {
+      padding: var(--space-5) var(--space-4);
+    }
+  }
+</style>

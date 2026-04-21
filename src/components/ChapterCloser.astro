@@ -1,0 +1,168 @@
+---
+export interface Props {
+  takeaways: string[];
+  quote: { text: string; attribution: string };
+  next?: {
+    chapterNumber: number;
+    title: string;
+    description: string;
+  };
+}
+
+const { takeaways, quote, next } = Astro.props;
+---
+<section class="closer-root">
+  <div class="takeaways">
+    <h2 class="takeaways-title">
+      其实你已经学到了
+      <span class="count">{takeaways.length} 件事</span>
+    </h2>
+    <ul class="takeaway-list" role="list">
+      {takeaways.map((item) => (
+        <li class="takeaway-item">
+          <span class="check-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="var(--color-bg-success)"/>
+              <path d="M8 12l3 3 5-5" stroke="var(--color-text-success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <blockquote class="pull-quote">
+    <p>{quote.text}</p>
+    <footer>— {quote.attribution}</footer>
+  </blockquote>
+
+  {next && (
+    <div class="next-chapter">
+      <p class="next-label">下一章</p>
+      <h3 class="next-title">第 {next.chapterNumber} 章：{next.title}</h3>
+      <p class="next-desc">{next.description}</p>
+      <a href={`/chapter/chapter-${next.chapterNumber}`} class="next-btn">
+        开始第 {next.chapterNumber} 章 →
+      </a>
+    </div>
+  )}
+</section>
+
+<style>
+  .closer-root {
+    margin-top: var(--space-7);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .takeaways {
+    background: var(--color-bg-primary);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+  }
+
+  .takeaways-title {
+    font-size: var(--text-md);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-4);
+  }
+
+  .count {
+    color: var(--color-text-info);
+  }
+
+  .takeaway-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .takeaway-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text-primary);
+  }
+
+  .check-icon {
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .pull-quote {
+    border-left: 2px solid var(--color-border-secondary);
+    padding: var(--space-4) var(--space-5);
+    margin: 0;
+  }
+
+  .pull-quote p {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-2);
+  }
+
+  .pull-quote footer {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .next-chapter {
+    background: var(--color-bg-info);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .next-label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-text-info);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .next-title {
+    font-size: var(--text-md);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .next-desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .next-btn {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    align-self: flex-start;
+    transition: opacity 0.12s;
+  }
+
+  .next-btn:hover {
+    opacity: 0.85;
+  }
+</style>

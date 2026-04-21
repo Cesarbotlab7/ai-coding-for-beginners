@@ -1,0 +1,366 @@
+---
+// 模拟监控 dashboard，含可点击异常点和 bug 分析流程
+---
+
+<div class="md-root">
+  <div class="md-header">
+    <span class="md-title">AI 资讯平台 · 监控面板</span>
+    <span class="md-date">过去 24 小时</span>
+  </div>
+
+  <div class="md-stats">
+    <div class="md-stat">
+      <div class="md-stat-val">1,243</div>
+      <div class="md-stat-label">页面访问</div>
+    </div>
+    <div class="md-stat md-stat--warn">
+      <div class="md-stat-val">14</div>
+      <div class="md-stat-label">错误次数 ⚠️</div>
+    </div>
+    <div class="md-stat">
+      <div class="md-stat-val">320ms</div>
+      <div class="md-stat-label">平均响应</div>
+    </div>
+    <div class="md-stat md-stat--alert">
+      <div class="md-stat-val">0</div>
+      <div class="md-stat-label">新增资讯 🔴</div>
+    </div>
+  </div>
+
+  <div class="md-chart-area">
+    <div class="md-chart-label">资讯抓取量（每 3 小时）</div>
+    <div class="md-chart" aria-label="资讯抓取量柱状图，12:00 时段异常，点击可查看详情">
+      <div class="md-bar" data-val="38" data-time="00:00"><div class="md-bar-fill" style="height:76%"></div><span class="md-bar-label">00:00</span></div>
+      <div class="md-bar" data-val="42" data-time="03:00"><div class="md-bar-fill" style="height:84%"></div><span class="md-bar-label">03:00</span></div>
+      <div class="md-bar" data-val="35" data-time="06:00"><div class="md-bar-fill" style="height:70%"></div><span class="md-bar-label">06:00</span></div>
+      <div class="md-bar" data-val="41" data-time="09:00"><div class="md-bar-fill" style="height:82%"></div><span class="md-bar-label">09:00</span></div>
+      <div class="md-bar md-bar--anomaly" id="mdAnomalyBar" data-val="0" data-time="12:00" role="button" tabindex="0" aria-label="12:00 时段抓取量异常，点击查看详情"><div class="md-bar-fill md-bar-fill--zero"></div><span class="md-bar-label">12:00 ⚠️</span></div>
+      <div class="md-bar" data-val="39" data-time="15:00"><div class="md-bar-fill" style="height:78%"></div><span class="md-bar-label">15:00</span></div>
+      <div class="md-bar" data-val="44" data-time="18:00"><div class="md-bar-fill" style="height:88%"></div><span class="md-bar-label">18:00</span></div>
+      <div class="md-bar" data-val="40" data-time="21:00"><div class="md-bar-fill" style="height:80%"></div><span class="md-bar-label">21:00</span></div>
+    </div>
+    <p class="md-chart-hint" id="mdChartHint">↑ 点击 12:00 那条红色异常柱，查看发生了什么</p>
+  </div>
+
+  <div class="md-investigation" id="mdInvestigation" hidden>
+    <div class="md-log-box">
+      <div class="md-log-header">GitHub Actions 日志 · 12:03 UTC</div>
+      <pre class="md-log"><code>Run python scraper/main.py
+RSS: 获取 23 条 ✓
+HackerNews: 获取 11 条 ✓
+arXiv: 获取 8 条 ✓
+Twitter: 开始查询...
+  请求 s.jina.ai 搜索...
+  ERROR: 401 Unauthorized
+  请检查 JINA_API_KEY 是否有效
+爬虫终止。本次写入: 0 条。</code></pre>
+    </div>
+
+    <div class="md-diagnosis">
+      <p class="md-diagnosis-q">你认为问题出在哪里？</p>
+      <div class="md-options">
+        <button class="md-opt" data-correct="false" type="button">代码写错了，需要修 Python 脚本</button>
+        <button class="md-opt" data-correct="true" type="button">JINA_API_KEY 失效或过期，需要更新密钥</button>
+        <button class="md-opt" data-correct="false" type="button">Supabase 数据库连接断了</button>
+      </div>
+      <div class="md-answer" id="mdAnswer" hidden aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .md-root {
+    margin: var(--space-6) 0;
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-primary);
+  }
+
+  .md-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-secondary);
+    border-bottom: 0.5px solid var(--color-border);
+  }
+
+  .md-title { font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--color-text-primary); }
+  .md-date  { font-size: var(--text-xs); color: var(--color-text-tertiary); }
+
+  .md-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 0.5px solid var(--color-border);
+  }
+
+  .md-stat {
+    padding: var(--space-3) var(--space-4);
+    border-right: 0.5px solid var(--color-border);
+    text-align: center;
+  }
+
+  .md-stat:last-child { border-right: none; }
+
+  .md-stat-val {
+    font-size: var(--text-lg);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+  }
+
+  .md-stat--warn .md-stat-val { color: var(--color-text-warning); }
+  .md-stat--alert .md-stat-val { color: var(--color-text-danger); }
+
+  .md-stat-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-1);
+  }
+
+  .md-chart-area {
+    padding: var(--space-4);
+    border-bottom: 0.5px solid var(--color-border);
+  }
+
+  .md-chart-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-3);
+    font-weight: var(--font-medium);
+  }
+
+  .md-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2);
+    height: 120px;
+    padding-bottom: var(--space-5);
+  }
+
+  .md-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    gap: var(--space-1);
+    position: relative;
+    cursor: default;
+  }
+
+  .md-bar-fill {
+    width: 100%;
+    background: var(--color-bg-info);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    transition: background 0.2s;
+    min-height: 4px;
+  }
+
+  .md-bar-fill--zero {
+    height: 4px !important;
+    background: var(--color-bg-danger);
+  }
+
+  .md-bar--anomaly {
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+  }
+
+  .md-bar--anomaly:hover,
+  .md-bar--anomaly:focus {
+    background: rgba(120,30,30,0.06);
+    outline: 2px solid var(--color-text-danger);
+    outline-offset: 2px;
+  }
+
+  .md-bar--anomaly .md-bar-fill {
+    background: var(--color-bg-danger) !important;
+    animation: mdPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes mdPulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+  }
+
+  .md-bar-label {
+    position: absolute;
+    bottom: -2px;
+    font-size: 9px;
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+    transform: translateX(-50%);
+    left: 50%;
+  }
+
+  .md-bar--anomaly .md-bar-label { color: var(--color-text-danger); }
+
+  .md-chart-hint {
+    margin: var(--space-2) 0 0;
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .md-investigation {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    animation: mdFadeIn 0.3s ease;
+  }
+
+  @keyframes mdFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .md-log-box {
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .md-log-header {
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-bg-tertiary);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+  }
+
+  .md-log {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    color: var(--color-text-primary);
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  .md-log code { font-family: inherit; }
+
+  .md-diagnosis-q {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-3);
+  }
+
+  .md-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .md-opt {
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .md-opt:hover:not(:disabled) {
+    border-color: var(--color-text-info);
+    color: var(--color-text-info);
+  }
+
+  .md-opt.md-correct {
+    border-color: var(--color-text-success);
+    background: var(--color-bg-success);
+    color: var(--color-text-success);
+  }
+
+  .md-opt.md-wrong {
+    border-color: var(--color-text-danger);
+    background: var(--color-bg-danger);
+    color: var(--color-text-danger);
+    animation: mdShake 0.35s ease;
+  }
+
+  @keyframes mdShake {
+    0%,100% { transform: translateX(0); }
+    25%     { transform: translateX(-4px); }
+    75%     { transform: translateX(4px); }
+  }
+
+  .md-answer {
+    margin-top: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-success);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--color-text-success);
+    line-height: 1.7;
+    animation: mdFadeIn 0.3s ease;
+  }
+
+  @media (max-width: 480px) {
+    .md-stats { grid-template-columns: 1fr 1fr; }
+    .md-stat { border-bottom: 0.5px solid var(--color-border); }
+  }
+</style>
+
+<script>
+  (function () {
+    var anomalyBar   = document.getElementById('mdAnomalyBar');
+    var investigation = document.getElementById('mdInvestigation');
+    var answerEl     = document.getElementById('mdAnswer');
+    var chartHint    = document.getElementById('mdChartHint');
+    var opts         = document.querySelectorAll('.md-opt');
+
+    if (!anomalyBar || !investigation || !answerEl) return;
+
+    var answered = false;
+
+    function showInvestigation() {
+      investigation.hidden = false;
+      if (chartHint) chartHint.textContent = '找到了！12:00 那次跑爬虫，出了问题。看看日志……';
+      investigation.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    anomalyBar.addEventListener('click', showInvestigation);
+    anomalyBar.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        showInvestigation();
+      }
+    });
+
+    opts.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (answered) return;
+        answered = true;
+
+        opts.forEach(function (b) { b.disabled = true; });
+
+        if (btn.dataset.correct === 'true') {
+          btn.className = 'md-opt md-correct';
+          answerEl.textContent = '答对了！日志里 ERROR 401 Unauthorized 指向 JINA_API_KEY——Jina AI 的免费密钥每月有配额，用完了就会返回 401。解决方法：去 jina.ai 重新生成一个密钥，更新 GitHub Actions 里的 Secret，重新跑一次 workflow 就恢复了。整个定位 + 修复过程，不超过 10 分钟。';
+          answerEl.hidden = false;
+        } else {
+          btn.className = 'md-opt md-wrong';
+          setTimeout(function () {
+            btn.className = 'md-opt';
+            btn.disabled = false;
+            answered = false;
+            opts.forEach(function (b) { b.disabled = false; });
+            answerEl.textContent = '不对。看日志里哪一步报错——RSS/HN/arXiv 都成功了，只有 Twitter 这一步失败了，而且报的是 401 Unauthorized。';
+            answerEl.hidden = false;
+          }, 500);
+        }
+      });
+    });
+  })();
+</script>

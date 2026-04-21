@@ -1,0 +1,19 @@
+---
+// 第0章专用 ChapterCloser，数据内嵌，不依赖父组件传参
+import ChapterCloser from '../ChapterCloser.astro';
+
+const takeaways = [
+  '一个真实项目，也就十几个文件。你一眼看完这个文件夹的能力，已经超过了 80% 完全不懂编程的人。',
+  '项目里有两种东西：你写的 + 工具自动生成的。点开头的文件夹（.claude、.github、.next）绝大部分都是工具管的，你不用怕。',
+  '一个完整产品，通常是"后端 + 前端"的双项目结构。scraper 负责收集数据、web 负责展示给用户——这两件事天然要分开。',
+  '给 AI 写的说明书（CLAUDE.md）是新时代的必需品。你会越来越多地看到这种"写给 AI 看"的文件——这是过去三年才出现的新物种。',
+];
+
+const quote = {
+  text: '编程的可怕之处不在于它复杂，而在于第一次看到它的时候没人告诉你：它其实就是几个文件夹装着几个文件而已。',
+  attribution: '每一个走过这条路的人都会同意',
+};
+
+// next 章节等 chapter-1.mdx 写完后再开放
+---
+<ChapterCloser takeaways={takeaways} quote={quote} />

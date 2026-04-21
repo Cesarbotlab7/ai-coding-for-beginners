@@ -1,0 +1,437 @@
+---
+import { TREE } from '../../content/data/file-explorer-nodes.ts';
+---
+
+<div class="fe-root" id="file-explorer" data-tree={JSON.stringify(TREE)}>
+  <div class="fe-breadcrumb" id="fe-breadcrumb" aria-label="当前位置">
+    <span>AI热点资讯平台</span>
+  </div>
+
+  <div class="fe-container">
+    <div class="fe-list-pane">
+      <div class="fe-list-header" aria-hidden="true">
+        <span>名称</span>
+        <span>类型</span>
+        <span>大小</span>
+      </div>
+      <div
+        id="fe-list"
+        class="fe-list"
+        role="listbox"
+        aria-label="文件列表，使用上下键选择，Enter 进入文件夹，Backspace 返回"
+        tabindex="0"
+      >
+        <!-- 由 JS 初始化 -->
+      </div>
+    </div>
+
+    <div
+      id="fe-detail"
+      class="fe-detail"
+      aria-live="polite"
+      aria-label="文件详情"
+    >
+      <p class="fe-detail-empty">← 点击左侧条目查看说明</p>
+    </div>
+  </div>
+
+  <div class="fe-footer">
+    <span id="fe-progress" aria-live="polite">
+      已认识 <strong>0</strong> / <strong id="fe-total">0</strong> 个成员
+    </span>
+  </div>
+</div>
+
+<style>
+  .fe-root {
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin: var(--space-6) 0;
+    background: var(--color-bg-primary);
+  }
+
+  .fe-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 0.5px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .crumb-sep {
+    color: var(--color-text-tertiary);
+  }
+
+  .crumb-btn {
+    color: var(--color-text-info);
+    background: none;
+    border: none;
+    font: inherit;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .crumb-btn:hover {
+    opacity: 0.8;
+  }
+
+  .fe-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 320px;
+  }
+
+  .fe-list-pane {
+    border-right: 0.5px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fe-list-header {
+    display: grid;
+    grid-template-columns: 1fr 72px 56px;
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 0.5px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-text-tertiary);
+  }
+
+  .fe-list {
+    flex: 1;
+    overflow-y: auto;
+    outline: none;
+  }
+
+  .fe-list:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-bg-info);
+  }
+
+  .fe-item {
+    display: grid;
+    grid-template-columns: 1fr 72px 56px;
+    align-items: center;
+    padding: 0 var(--space-4);
+    height: 40px;
+    cursor: pointer;
+    border-bottom: 0.5px solid var(--color-border);
+    transition: background-color 0.08s;
+  }
+
+  .fe-item:hover {
+    background: var(--color-bg-secondary);
+  }
+
+  .fe-item.selected {
+    background: var(--color-bg-info);
+  }
+
+  .fe-item-name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    color: var(--color-text-primary);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .fe-item.selected .fe-item-name {
+    color: var(--color-text-info);
+  }
+
+  .fe-item-type {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .fe-item.selected .fe-item-type {
+    color: var(--color-text-info);
+    opacity: 0.8;
+  }
+
+  .fe-item-size {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+  }
+
+  .fe-detail {
+    padding: var(--space-5);
+    background: var(--color-bg-secondary);
+    overflow-y: auto;
+  }
+
+  .fe-detail-empty {
+    color: var(--color-text-tertiary);
+    font-size: var(--text-sm);
+    margin: 0;
+    padding-top: var(--space-4);
+  }
+
+  .fe-detail-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-2);
+  }
+
+  .fe-detail-nick {
+    font-size: var(--text-lg);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-3);
+  }
+
+  .fe-detail-role {
+    display: inline-block;
+    padding: 2px var(--space-2);
+    border-radius: 10px;
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    background: var(--color-bg-info);
+    color: var(--color-text-info);
+    margin-bottom: var(--space-4);
+  }
+
+  .fe-detail-desc {
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-4);
+  }
+
+  .fe-detail-hint {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-info);
+    color: var(--color-text-info);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+  }
+
+  .fe-enter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: background-color 0.12s;
+  }
+
+  .fe-enter-btn:hover {
+    background: var(--color-bg-tertiary);
+  }
+
+  .fe-enter-btn:active {
+    transform: scale(0.98);
+  }
+
+  .fe-footer {
+    padding: var(--space-3) var(--space-4);
+    border-top: 0.5px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .fe-footer strong {
+    color: var(--color-text-info);
+    font-weight: var(--font-medium);
+  }
+
+  @media (max-width: 640px) {
+    .fe-container {
+      grid-template-columns: 1fr;
+    }
+
+    .fe-list-pane {
+      border-right: none;
+      border-bottom: 0.5px solid var(--color-border);
+      min-height: 200px;
+    }
+
+    .fe-detail {
+      min-height: 180px;
+    }
+  }
+</style>
+
+<script>
+const rootEl = document.getElementById('file-explorer');
+if (!rootEl) throw new Error('找不到 file-explorer 元素');
+
+const TREE = JSON.parse(rootEl.dataset.tree || '{}');
+
+// 状态
+let currentFolderKey = 'root';
+let selectedItemKey: string | null = null;
+const seenKeys = new Set<string>();
+
+// DOM 引用
+const listEl = document.getElementById('fe-list')!;
+const detailEl = document.getElementById('fe-detail')!;
+const breadcrumbEl = document.getElementById('fe-breadcrumb')!;
+const progressEl = document.getElementById('fe-progress')!;
+
+// SVG 图标
+const FOLDER_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#f0c040" stroke="#d4a010" stroke-width="1.2" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>`;
+const FILE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+
+function totalNodeCount(): number {
+  return Object.values(TREE as Record<string, { items: unknown[] }>)
+    .reduce((acc, folder) => acc + folder.items.length, 0);
+}
+
+function renderBreadcrumb() {
+  const folder = TREE[currentFolderKey];
+  if (!folder) return;
+
+  if (folder.path.length === 0) {
+    breadcrumbEl.innerHTML = `<span>AI热点资讯平台</span>`;
+  } else {
+    let html = `<button class="crumb-btn" data-folder="root">AI热点资讯平台</button>`;
+    folder.path.forEach((seg: string, i: number) => {
+      html += `<span class="crumb-sep"> / </span>`;
+      if (i === folder.path.length - 1) {
+        html += `<span>${seg}</span>`;
+      }
+    });
+    breadcrumbEl.innerHTML = html;
+
+    breadcrumbEl.querySelectorAll<HTMLButtonElement>('.crumb-btn').forEach(btn => {
+      btn.addEventListener('click', () => navigateTo(btn.dataset.folder!));
+    });
+  }
+}
+
+function renderList() {
+  const folder = TREE[currentFolderKey];
+  if (!folder) return;
+
+  listEl.innerHTML = '';
+  folder.items.forEach((item: any, idx: number) => {
+    const div = document.createElement('div');
+    div.className = 'fe-item' + (selectedItemKey === item.key ? ' selected' : '');
+    div.setAttribute('role', 'option');
+    div.setAttribute('aria-selected', String(selectedItemKey === item.key));
+    div.setAttribute('data-key', item.key);
+    div.setAttribute('tabindex', idx === 0 ? '0' : '-1');
+
+    const icon = item.type === 'folder' ? FOLDER_SVG : FILE_SVG;
+    div.innerHTML = `
+      <div class="fe-item-name">${icon}<span>${item.name}</span></div>
+      <div class="fe-item-type">${item.type === 'folder' ? '文件夹' : '文件'}</div>
+      <div class="fe-item-size">${item.size ?? '—'}</div>
+    `;
+
+    div.addEventListener('click', () => selectItem(item.key));
+    listEl.appendChild(div);
+  });
+}
+
+function renderDetail(key: string) {
+  const folder = TREE[currentFolderKey];
+  const item = folder?.items.find((i: any) => i.key === key);
+  if (!item) return;
+
+  let html = `
+    <p class="fe-detail-name">${item.name}</p>
+    <p class="fe-detail-nick">${item.nick}</p>
+    <span class="fe-detail-role">${item.role}</span>
+    <p class="fe-detail-desc">${item.desc}</p>
+  `;
+
+  if (item.hint) {
+    html += `<div class="fe-detail-hint">${item.hint}</div>`;
+  }
+
+  if (item.enterable) {
+    html += `<button class="fe-enter-btn" data-folder="${item.key}" aria-label="进入 ${item.name} 文件夹">点进去看看 →</button>`;
+  }
+
+  detailEl.innerHTML = html;
+
+  const enterBtn = detailEl.querySelector<HTMLButtonElement>('.fe-enter-btn');
+  if (enterBtn) {
+    enterBtn.addEventListener('click', () => navigateTo(enterBtn.dataset.folder!));
+  }
+}
+
+function selectItem(key: string) {
+  selectedItemKey = key;
+  seenKeys.add(key);
+
+  // 更新选中样式
+  listEl.querySelectorAll<HTMLElement>('.fe-item').forEach(el => {
+    const isSelected = el.dataset.key === key;
+    el.classList.toggle('selected', isSelected);
+    el.setAttribute('aria-selected', String(isSelected));
+  });
+
+  renderDetail(key);
+  updateProgress();
+}
+
+function navigateTo(folderKey: string) {
+  if (!TREE[folderKey]) return;
+  currentFolderKey = folderKey;
+  selectedItemKey = null;
+  detailEl.innerHTML = `<p class="fe-detail-empty">← 点击左侧条目查看说明</p>`;
+  renderBreadcrumb();
+  renderList();
+}
+
+function updateProgress() {
+  const total = totalNodeCount();
+  progressEl.innerHTML = `已认识 <strong>${seenKeys.size}</strong> / <strong>${total}+</strong> 个成员`;
+}
+
+// 键盘导航
+listEl.addEventListener('keydown', (e: KeyboardEvent) => {
+  const folder = TREE[currentFolderKey];
+  if (!folder) return;
+  const items = folder.items as any[];
+  const currentIdx = items.findIndex((i: any) => i.key === selectedItemKey);
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    const nextIdx = currentIdx < items.length - 1 ? currentIdx + 1 : 0;
+    selectItem(items[nextIdx].key);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    const prevIdx = currentIdx > 0 ? currentIdx - 1 : items.length - 1;
+    selectItem(items[prevIdx].key);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (selectedItemKey) {
+      const item = items.find((i: any) => i.key === selectedItemKey);
+      if (item?.enterable) navigateTo(selectedItemKey);
+    }
+  } else if (e.key === 'Backspace' || e.key === 'Escape') {
+    e.preventDefault();
+    if (currentFolderKey !== 'root') navigateTo('root');
+  }
+});
+
+// 初始化
+renderBreadcrumb();
+renderList();
+updateProgress();
+</script>

@@ -1,0 +1,47 @@
+# Nginx 站点配置示例
+# 
+# 放到服务器的 /etc/nginx/sites-available/ai-coding-for-beginners
+# 然后 ln -s 到 /etc/nginx/sites-enabled/
+# 最后 sudo nginx -t && sudo systemctl reload nginx
+#
+# 首次部署时需要你修改的东西：
+# - 无（直接用公网 IP 访问即可）
+#
+# 接域名时需要修改的东西：
+# - server_name 改为你的域名
+# - 加 HTTPS 配置（推荐用 certbot 自动生成）
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name _;  # 匹配所有请求（因为当前用 IP 访问）
+
+    root /var/www/ai-coding-for-beginners/dist;
+    index index.html;
+
+    # 静态资源长缓存
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+        expires 7d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # HTML 不缓存（保证每次部署立刻生效）
+    location / {
+        try_files $uri $uri/ $uri.html =404;
+        add_header Cache-Control "no-cache";
+    }
+
+    # 隐藏 nginx 版本号
+    server_tokens off;
+
+    # gzip
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml application/json application/javascript application/xml+rss application/atom+xml image/svg+xml;
+
+    # 日志
+    access_log /var/log/nginx/ai-coding-beginners-access.log;
+    error_log /var/log/nginx/ai-coding-beginners-error.log;
+}

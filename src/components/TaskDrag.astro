@@ -1,0 +1,260 @@
+---
+// 前端/后端任务分类游戏，点击选择答案
+const tasks = [
+  { id: 't1',  label: '给按钮换个颜色',     answer: 'frontend' },
+  { id: 't2',  label: '计算资讯重要性分数',  answer: 'backend'  },
+  { id: 't3',  label: '验证账号密码是否正确', answer: 'backend'  },
+  { id: 't4',  label: '制作点击时的动画效果', answer: 'frontend' },
+  { id: 't5',  label: '每 3 小时自动抓取资讯', answer: 'backend' },
+  { id: 't6',  label: '把资讯存入数据库',    answer: 'backend'  },
+  { id: 't7',  label: '让网页在手机上看起来好看', answer: 'frontend' },
+  { id: 't8',  label: '用 AI 生成中文摘要',  answer: 'backend'  },
+  { id: 't9',  label: '渲染资讯卡片列表',    answer: 'frontend' },
+  { id: 't10', label: '检查用户是否重复点赞', answer: 'backend'  },
+];
+---
+
+<div class="td-root" id="tdRoot">
+  <div class="td-board">
+    <div class="td-pool" id="tdPool" aria-label="待分类任务">
+      {tasks.map((t) => (
+        <div
+          class="td-card"
+          data-id={t.id}
+          data-answer={t.answer}
+          role="group"
+          aria-label={t.label}
+        >
+          <p class="td-card-label">{t.label}</p>
+          <div class="td-card-btns">
+            <button
+              class="td-btn td-btn--frontend"
+              data-choice="frontend"
+              type="button"
+              aria-label={`"${t.label}"归前端管`}
+            >
+              前端
+            </button>
+            <button
+              class="td-btn td-btn--backend"
+              data-choice="backend"
+              type="button"
+              aria-label={`"${t.label}"归后端管`}
+            >
+              后端
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="td-result" id="tdResult" hidden aria-live="polite">
+    <p class="td-result-text" id="tdResultText"></p>
+    <button class="td-retry-btn" id="tdRetryBtn" type="button">重新来过</button>
+  </div>
+
+  <div class="td-progress" id="tdProgress" aria-live="polite">
+    <span id="tdCount">0</span> / {tasks.length} 已答对
+  </div>
+</div>
+
+<style>
+  .td-root {
+    margin: var(--space-6) 0;
+  }
+
+  .td-pool {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .td-card {
+    background: var(--color-bg-primary);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-3);
+    transition: border-color 0.25s, background 0.25s;
+  }
+
+  .td-card.td-correct {
+    border-color: var(--color-text-success);
+    background: var(--color-bg-success);
+  }
+
+  .td-card.td-wrong {
+    border-color: var(--color-text-danger);
+    background: var(--color-bg-danger);
+    animation: tdShake 0.35s ease;
+  }
+
+  @keyframes tdShake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-5px); }
+    40%     { transform: translateX(5px); }
+    60%     { transform: translateX(-4px); }
+    80%     { transform: translateX(4px); }
+  }
+
+  .td-card-label {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-2);
+    line-height: 1.5;
+  }
+
+  .td-card.td-correct .td-card-label {
+    color: var(--color-text-success);
+  }
+
+  .td-card.td-wrong .td-card-label {
+    color: var(--color-text-danger);
+  }
+
+  .td-card-btns {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .td-btn {
+    flex: 1;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .td-btn--frontend:hover {
+    background: var(--color-bg-info);
+    color: var(--color-text-info);
+    border-color: var(--color-text-info);
+  }
+
+  .td-btn--backend:hover {
+    background: var(--color-bg-warning);
+    color: var(--color-text-warning);
+    border-color: var(--color-text-warning);
+  }
+
+  .td-card.td-correct .td-btn,
+  .td-card.td-wrong .td-btn {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .td-progress {
+    text-align: right;
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-3);
+  }
+
+  .td-result {
+    padding: var(--space-4);
+    background: var(--color-bg-success);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-text-success);
+    text-align: center;
+    animation: tdFadeUp 0.3s ease;
+  }
+
+  @keyframes tdFadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .td-result-text {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-success);
+    line-height: 1.6;
+  }
+
+  .td-retry-btn {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-text-success);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-primary);
+    font-size: var(--text-sm);
+    color: var(--color-text-success);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .td-retry-btn:hover {
+    background: var(--color-bg-success);
+  }
+
+  @media (max-width: 480px) {
+    .td-pool {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var total   = 10;
+    var correct = 0;
+    var countEl  = document.getElementById('tdCount');
+    var resultEl = document.getElementById('tdResult');
+    var resultTxt = document.getElementById('tdResultText');
+    var retryBtn = document.getElementById('tdRetryBtn');
+
+    if (!countEl || !resultEl || !resultTxt || !retryBtn) return;
+
+    function updateCount() {
+      countEl.textContent = String(correct);
+    }
+
+    function checkDone() {
+      if (correct < total) return;
+      if (resultTxt) {
+        resultTxt.textContent = '全部答对！你已经能分清前端和后端各管什么了。以后听到这两个词，你不会再假笑了。';
+      }
+      if (resultEl) resultEl.hidden = false;
+    }
+
+    var cards = document.querySelectorAll('.td-card');
+    cards.forEach(function (card) {
+      var answer = card.dataset.answer;
+      var btns   = card.querySelectorAll('.td-btn');
+
+      btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (card.classList.contains('td-correct') || card.classList.contains('td-wrong')) return;
+
+          var choice = btn.dataset.choice;
+          if (choice === answer) {
+            card.classList.add('td-correct');
+            correct++;
+            updateCount();
+            checkDone();
+          } else {
+            card.classList.add('td-wrong');
+            setTimeout(function () {
+              card.classList.remove('td-wrong');
+            }, 600);
+          }
+        });
+      });
+    });
+
+    retryBtn.addEventListener('click', function () {
+      correct = 0;
+      updateCount();
+      resultEl.hidden = true;
+      cards.forEach(function (card) {
+        card.classList.remove('td-correct', 'td-wrong');
+      });
+    });
+  })();
+</script>

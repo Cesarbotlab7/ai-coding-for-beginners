@@ -1,0 +1,17 @@
+---
+// 第3章专用 ChapterCloser，数据内嵌
+import ChapterCloser from '../ChapterCloser.astro';
+
+const takeaways = [
+  'GitHub 是代码的时间机，不是朋友圈也不是网盘——改坏了随时能回滚到之前的版本。',
+  'commit = 保存 + 便签（为什么改）；push = 同步到云端；pull = 拉别人的更新。',
+  '改坏了随时能回滚，这给了你"敢动手"的底气。',
+  'GitHub Actions 可以免费帮你跑定时任务——AI 资讯平台的爬虫每 3 小时就靠它活着。',
+];
+
+const quote = {
+  text: '程序员最大的安全感不是"我写对了"，而是"我能回到昨天那个写对了的版本"。',
+  attribution: '每一个被 git 救过的人都会点头',
+};
+---
+<ChapterCloser takeaways={takeaways} quote={quote} />

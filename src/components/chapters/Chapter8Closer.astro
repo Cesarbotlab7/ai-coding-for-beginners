@@ -1,0 +1,17 @@
+---
+// 第8章专用 ChapterCloser，数据内嵌
+import ChapterCloser from '../ChapterCloser.astro';
+
+const takeaways = [
+  '你的第一个网站，可能丑、假、简陋——但它活着，这就是最重要的事。',
+  '先让它跑起来，再让它好看，再让它有用。不要在没跑起来之前纠结这些。',
+  '遇到报错不要慌——把整段报错（不只是最后一行）完整粘给 Claude Code。',
+  '你现在有一个跑在自己电脑上的真实项目。这不再是教程，是作品。',
+];
+
+const quote = {
+  text: '"我做了一个东西"和"我在学做东西"，中间只隔一次 npm run dev。',
+  attribution: '你刚刚跨过去了',
+};
+---
+<ChapterCloser takeaways={takeaways} quote={quote} />

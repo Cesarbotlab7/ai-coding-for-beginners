@@ -1,0 +1,24 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'AI 编程入门——写给完全不会代码的你' } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title} · AI编程入门</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+

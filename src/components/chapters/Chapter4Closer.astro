@@ -1,0 +1,17 @@
+---
+// 第4章专用 ChapterCloser，数据内嵌
+import ChapterCloser from '../ChapterCloser.astro';
+
+const takeaways = [
+  '数据库就是"被程序自动读写的 Excel"——表、行、列的概念和 Excel 一模一样。',
+  '登录的本质是三步：查（找到你的邮箱）→ 对比（验证密码哈希）→ 回答（登录成功/失败）。',
+  '"排序""筛选"这些功能，对数据库来说就是一行查询语句，不是什么神奇的算法。',
+  'Supabase 这种服务让你不用自己搭数据库——注册、建表、拿链接，完事。',
+];
+
+const quote = {
+  text: '去掉数据库这三个字的神秘感，编程世界大概就少了三分之一的恐吓。',
+  attribution: '大多数"高深"概念，命名都比它本身难理解',
+};
+---
+<ChapterCloser takeaways={takeaways} quote={quote} />
