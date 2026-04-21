@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # ========== 在首次部署前填写这些变量 ==========
-SERVER_IP="YOUR_TENCENT_LIGHTHOUSE_IP"
+SERVER_IP="124.222.23.162"
 SERVER_USER="ubuntu"
 PROJECT_PATH="/var/www/ai-coding-for-beginners"
 # ============================================

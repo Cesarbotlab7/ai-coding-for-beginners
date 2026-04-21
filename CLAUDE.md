@@ -143,6 +143,8 @@ import { TREE } from '../../content/data/file-explorer-nodes.ts';
 
 - 机器同时运行 OpenClaw（本地 AI 服务）。涉及端口、后台服务时不要破坏它。
 
+**GitHub 仓库**：https://github.com/Cesarbotlab7/ai-coding-for-beginners
+
 **生产端**（腾讯云轻量服务器，Ubuntu 22.04）：
 
 - Nginx 直接服务 `dist/` 目录，无需 reload
