@@ -1,0 +1,16 @@
+---
+import ChapterCloser from '../ChapterCloser.astro';
+
+const takeaways = [
+  'Claude Code 不是网页——它跑在你的终端里，直接操作你电脑上的文件。',
+  'API Key 是你的通行证，不要发给任何人，不要提交到 GitHub。',
+  'npm install 这条命令，你以后会用几百次。先记住它能做什么，不用记住每个字母。',
+  '装好了，你就比绝大多数「想学AI」的人多走了一步。',
+];
+
+const quote = {
+  text: '工具装好的那一刻，想法就变成了可能性。',
+  attribution: '现在打开终端，输入 claude',
+};
+---
+<ChapterCloser takeaways={takeaways} quote={quote} />

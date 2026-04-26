@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AIIntroSection from '../components/AIIntroSection.astro';
 
 const allChapters = await getCollection('chapters');
 const chapters = allChapters.sort((a, b) => {
@@ -27,6 +28,8 @@ const stages = [0, 1, 2, 3];
         写下的 10 章入门教程。每章都有可以动手玩的交互。
       </p>
     </section>
+
+    <AIIntroSection />
 
     <section class="curriculum">
       {stages.map(stage => {

@@ -13,6 +13,8 @@ import Chapter6Closer from '../../components/chapters/Chapter6Closer.astro';
 import Chapter7Closer from '../../components/chapters/Chapter7Closer.astro';
 import Chapter8Closer from '../../components/chapters/Chapter8Closer.astro';
 import Chapter9Closer from '../../components/chapters/Chapter9Closer.astro';
+import ChapterInstallCloser from '../../components/chapters/ChapterInstallCloser.astro';
+import InstallGuide from '../../components/InstallGuide.astro';
 import RequestFlow from '../../components/RequestFlow.astro';
 import RestaurantMap from '../../components/RestaurantMap.astro';
 import TaskDrag from '../../components/TaskDrag.astro';
@@ -56,6 +58,7 @@ const chapterCloserMap: Record<string, any> = {
   'chapter-7': Chapter7Closer,
   'chapter-8': Chapter8Closer,
   'chapter-9': Chapter9Closer,
+  'install-claude-code': ChapterInstallCloser,
 };
 const ChapterCloser = chapterCloserMap[chapter.data.slug] ?? null;
 ---
@@ -83,6 +86,7 @@ const ChapterCloser = chapterCloserMap[chapter.data.slug] ?? null;
       ClaudeComparison,
       StepChecklist,
       MonitorDashboard,
+      InstallGuide,
       ChapterCloser,
     }}
   />
