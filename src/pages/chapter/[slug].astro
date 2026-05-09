@@ -25,6 +25,7 @@ import DNSAnimation from '../../components/DNSAnimation.astro';
 import ClaudeComparison from '../../components/ClaudeComparison.astro';
 import StepChecklist from '../../components/StepChecklist.astro';
 import MonitorDashboard from '../../components/MonitorDashboard.astro';
+import VibeCodingSetup from '../../components/VibeCodingSetup.astro';
 
 export async function getStaticPaths() {
   const allChapters = await getCollection('chapters');
@@ -86,6 +87,7 @@ const ChapterCloser = chapterCloserMap[chapter.data.slug] ?? null;
       ClaudeComparison,
       StepChecklist,
       MonitorDashboard,
+      VibeCodingSetup,
       InstallGuide,
       ChapterCloser,
     }}

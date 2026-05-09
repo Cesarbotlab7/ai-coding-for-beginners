@@ -1,0 +1,384 @@
+---
+// Vibe coding 入门装备选择器：把工具清单拆成小白能理解的几个层级
+const layers = [
+  {
+    id: 'computer',
+    label: '电脑',
+    title: '先要一台少折腾的电脑',
+    choice: 'Mac + 16GB 内存，是最省心的起步线。',
+    desc: '你会同时开编辑器、终端、浏览器和 AI 助手。内存太小，电脑会像后厨只有一张案板：每个人都在排队，做什么都慢。',
+    avoid: '不要刚开始就把主要精力花在 Windows 路径、权限、代理和终端差异上。能用 Windows，但新手更容易被环境问题拖住。',
+  },
+  {
+    id: 'editor',
+    label: '编辑器',
+    title: '先用看得见文件的工具',
+    choice: 'VS Code、Cursor、Windsurf、Trae，先选一个，不要四个都装。',
+    desc: '编辑器像餐厅门店。你要能看见项目文件、打开页面、找到 AI 改了哪里。界面越直观，越适合刚开始。',
+    avoid: '不要把第一周变成工具评测。能打开项目、能问 AI、能看到改动，就够用。',
+  },
+  {
+    id: 'agent',
+    label: 'Agent',
+    title: '再上能动手干活的助手',
+    choice: 'Claude Code 和 Codex 属于更强的 Agent 工具，适合认真做项目时使用。',
+    desc: '普通聊天工具像顾问，给你建议。Agent 像会进厨房的师傅，能读文件、改文件、跑命令、看报错。',
+    avoid: '不要在还不知道项目文件在哪里时，直接把所有权限交给 Agent。先看懂它准备改什么，再确认。',
+  },
+  {
+    id: 'model',
+    label: '模型',
+    title: '分清框架和发动机',
+    choice: 'Codex 常接 GPT 系列，Claude Code 常接 Claude；国内也可以看 Kimi、GLM 等模型。',
+    desc: 'Agent 框架像车架和方向盘，模型像发动机。车架决定怎么转弯、怎么刹车；发动机决定马力。新手先固定一套跑通项目，再考虑换发动机。',
+    avoid: '不要频繁切模型来追热点。每换一次，你都要重新适应它的脾气、错误方式和成本边界。',
+  },
+  {
+    id: 'voice',
+    label: '输入',
+    title: '能说清楚，比打字快更重要',
+    choice: '准备一个语音输入工具，把想法口述成文字再发给 AI。',
+    desc: 'vibe coding 不是一句“帮我做个网站”就结束。你要连续说目标、限制、参考、不要做什么。语音输入能帮你把脑子里的需求完整倒出来。',
+    avoid: '不要只给短命令。AI 最怕的不是你不会代码，而是你没把目标讲完整。',
+  },
+];
+
+const routes = [
+  {
+    title: '完全小白',
+    badge: '推荐',
+    path: 'Mac → VS Code / Cursor / Windsurf / Trae → 一个可用 AI 账号 → 语音输入',
+    reason: '先把文件和改动看见，降低恐惧感。',
+  },
+  {
+    title: '准备认真做项目',
+    badge: '进阶',
+    path: 'Mac → VS Code → Claude Code 或 Codex → GitHub → 本地测试',
+    reason: 'Agent 能读项目、改项目、跑测试，适合从想法推进到可上线版本。',
+  },
+  {
+    title: '网络或预算受限',
+    badge: '备选',
+    path: '可访问的国内工具 / 国内模型 → 固定一套流程 → 跑通第一个小项目',
+    reason: '先保证每天能稳定使用，再谈工具上限。桥接和换模型工具放到后面学。',
+  },
+];
+---
+
+<section class="vibe-root" aria-labelledby="vibe-title">
+  <div class="vibe-head">
+    <p class="vibe-eyebrow">入门装备台</p>
+    <h2 id="vibe-title">vibe coding 不是装满工具，而是配一套能开工的装备</h2>
+    <p>
+      下面这五层按顺序看。你不需要马上做最强配置，只需要选一条能稳定跑起来的路线。
+    </p>
+  </div>
+
+  <div class="vibe-shell">
+    <div class="vibe-tabs" role="tablist" aria-label="vibe coding 装备层级">
+      {layers.map((layer, index) => (
+        <button
+          class={`vibe-tab ${index === 0 ? 'vibe-tab--active' : ''}`}
+          id={`vibe-tab-${layer.id}`}
+          type="button"
+          role="tab"
+          aria-selected={index === 0 ? 'true' : 'false'}
+          aria-controls={`vibe-panel-${layer.id}`}
+          data-vibe-tab={layer.id}
+        >
+          <span class="vibe-tab-num">{index + 1}</span>
+          <span>{layer.label}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="vibe-panels">
+      {layers.map((layer, index) => (
+        <article
+          class={`vibe-panel ${index === 0 ? 'vibe-panel--active' : ''}`}
+          id={`vibe-panel-${layer.id}`}
+          role="tabpanel"
+          aria-labelledby={`vibe-tab-${layer.id}`}
+          data-vibe-panel={layer.id}
+          hidden={index !== 0}
+        >
+          <p class="vibe-panel-label">{layer.label}</p>
+          <h3>{layer.title}</h3>
+          <div class="vibe-choice">{layer.choice}</div>
+          <p>{layer.desc}</p>
+          <div class="vibe-avoid">
+            <span>先别做</span>
+            <p>{layer.avoid}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <div class="vibe-routes" aria-label="三条入门路线">
+    {routes.map((route) => (
+      <article class="vibe-route">
+        <div class="vibe-route-head">
+          <h3>{route.title}</h3>
+          <span>{route.badge}</span>
+        </div>
+        <p class="vibe-route-path">{route.path}</p>
+        <p class="vibe-route-reason">{route.reason}</p>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .vibe-root {
+    margin: var(--space-7) 0;
+  }
+
+  .vibe-head {
+    margin-bottom: var(--space-5);
+  }
+
+  .vibe-eyebrow {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-info);
+    font-weight: var(--font-medium);
+  }
+
+  .vibe-head h2 {
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-3);
+  }
+
+  .vibe-head p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .vibe-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-primary);
+  }
+
+  .vibe-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--color-bg-secondary);
+    border-right: 0.5px solid var(--color-border);
+  }
+
+  .vibe-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    padding: var(--space-3);
+    border: 0.5px solid transparent;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.12s, color 0.12s, border-color 0.12s;
+  }
+
+  .vibe-tab:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  .vibe-tab--active {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-secondary);
+  }
+
+  .vibe-tab-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-5);
+    height: var(--space-5);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .vibe-tab--active .vibe-tab-num {
+    background: var(--color-bg-info);
+    color: var(--color-text-info);
+  }
+
+  .vibe-panels {
+    min-height: calc(var(--space-8) * 4);
+  }
+
+  .vibe-panel {
+    padding: var(--space-5);
+  }
+
+  .vibe-panel-label {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+  }
+
+  .vibe-panel h3 {
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-md);
+  }
+
+  .vibe-choice {
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-info);
+    color: var(--color-text-info);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    font-weight: var(--font-medium);
+  }
+
+  .vibe-panel p {
+    margin: 0 0 var(--space-4);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.75;
+  }
+
+  .vibe-avoid {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-warning);
+    color: var(--color-text-warning);
+  }
+
+  .vibe-avoid span {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+  }
+
+  .vibe-avoid p {
+    margin: 0;
+    color: inherit;
+  }
+
+  .vibe-routes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .vibe-route {
+    padding: var(--space-4);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-primary);
+  }
+
+  .vibe-route-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .vibe-route-head h3 {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+
+  .vibe-route-head span {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-success);
+    color: var(--color-text-success);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+
+  .vibe-route-path {
+    margin: 0 0 var(--space-3);
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    line-height: 1.65;
+  }
+
+  .vibe-route-reason {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-xs);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 44rem) {
+    .vibe-shell,
+    .vibe-routes {
+      grid-template-columns: 1fr;
+    }
+
+    .vibe-tabs {
+      border-right: none;
+      border-bottom: 0.5px solid var(--color-border);
+    }
+
+    .vibe-panels {
+      min-height: auto;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-vibe-tab]'));
+    var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vibe-panel]'));
+
+    function activate(id) {
+      tabs.forEach(function (tab) {
+        var isActive = tab.getAttribute('data-vibe-tab') === id;
+        tab.classList.toggle('vibe-tab--active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      panels.forEach(function (panel) {
+        var isActive = panel.getAttribute('data-vibe-panel') === id;
+        panel.hidden = !isActive;
+        panel.classList.toggle('vibe-panel--active', isActive);
+      });
+    }
+
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener('click', function () {
+        var id = tab.getAttribute('data-vibe-tab');
+        if (id) activate(id);
+      });
+
+      tab.addEventListener('keydown', function (event) {
+        if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+        event.preventDefault();
+        var nextIndex = event.key === 'ArrowDown' ? index + 1 : index - 1;
+        var nextTab = tabs[(nextIndex + tabs.length) % tabs.length];
+        nextTab.focus();
+        var id = nextTab.getAttribute('data-vibe-tab');
+        if (id) activate(id);
+      });
+    });
+  })();
+</script>
