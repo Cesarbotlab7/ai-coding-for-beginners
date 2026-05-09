@@ -28,7 +28,7 @@
     <div class="step-panel active" data-panel="0">
       <p class="step-eyebrow">步骤 1 / 4</p>
       <h3 class="step-title">安装 Node.js</h3>
-      <p class="step-body">后面创建 Astro 项目会用到 <code>node</code> 和 <code>npm</code>。npm 随 Node.js 一起来。去官网下载安装包，一路「Continue」就行，不需要任何配置。</p>
+      <p class="step-body">Claude Code 是通过 <code>npm</code> 安装的，npm 随 Node.js 一起来。去官网下载安装包，一路「Continue」就行，不需要任何配置。</p>
 
       <a class="step-link-btn" href="https://nodejs.org" target="_blank" rel="noopener noreferrer">
         去下载 Node.js →
@@ -52,11 +52,11 @@
     <div class="step-panel" data-panel="1">
       <p class="step-eyebrow">步骤 2 / 4</p>
       <h3 class="step-title">安装 Claude Code</h3>
-      <p class="step-body">在终端里粘贴下面这条命令，回车。它会从 Claude 官网下载安装器。安装命令以后可能变化，真实操作前以官网显示为准。</p>
+      <p class="step-body">在终端里粘贴下面这条命令，回车。npm 会自动从网络下载安装，大概需要 30 秒。</p>
 
       <div class="cmd-block">
-        <span class="cmd-text" id="cmd-1">curl -fsSL https://claude.ai/install.sh | bash</span>
-        <button class="copy-btn" data-copy="curl -fsSL https://claude.ai/install.sh | bash" aria-label="复制命令">复制</button>
+        <span class="cmd-text" id="cmd-1">npm install -g @anthropic-ai/claude-code</span>
+        <button class="copy-btn" data-copy="npm install -g @anthropic-ai/claude-code" aria-label="复制命令">复制</button>
       </div>
 
       <div class="terminal-output" id="out-1" aria-live="polite">
@@ -76,8 +76,8 @@
         <div class="api-step">
           <span class="api-step-num" style="font-size:var(--text-base);">A</span>
           <span>
-            <strong>Claude.ai 账号或订阅</strong><br>
-            使用账号方式时，启动 Claude Code 会自动打开浏览器让你登录 claude.ai，授权即可。<strong>不需要单独拿 API Key。</strong>
+            <strong>Claude.ai Pro 订阅</strong>（$20/月）<br>
+            订阅后，启动 Claude Code 时会自动打开浏览器让你登录 claude.ai 账号，授权即可。<strong>不需要单独拿 API Key。</strong>
           </span>
         </div>
         <div class="api-step">
@@ -90,12 +90,12 @@
       </div>
 
       <a class="step-link-btn" href="https://claude.ai" target="_blank" rel="noopener noreferrer">
-        打开 Claude.ai →
+        订阅 Claude.ai Pro →
       </a>
 
       <div class="tip-box">
         <span class="tip-icon" aria-hidden="true">⚠️</span>
-        <p>AI 编程工具的套餐、额度和价格变化很快。不要背别人截图里的数字，付费前打开官网确认一次。</p>
+        <p>Anthropic API <strong>没有免费额度</strong>，必须先充值才能用。如果你已经订阅了 Claude.ai Pro，用方式 A 就够了，不需要额外付钱。</p>
       </div>
 
       <button class="next-btn" data-next="3">✓ 我搞定了，下一步</button>
@@ -501,9 +501,9 @@
       { type: 'dim',    text: '# 看到版本号就对了。如果提示 command not found，说明还没装好。' },
     ],
     1: [
-      { type: 'prompt', text: '$ curl -fsSL https://claude.ai/install.sh | bash' },
-      { type: 'dim',    text: 'Downloading Claude Code installer...' },
-      { type: 'out',    text: 'Installing Claude Code...' },
+      { type: 'prompt', text: '$ npm install -g @anthropic-ai/claude-code' },
+      { type: 'dim',    text: 'npm warn deprecated ...' },
+      { type: 'out',    text: 'added 128 packages in 14s' },
       { type: 'dim',    text: '' },
       { type: 'ok',     text: '✓ Claude Code installed successfully' },
     ],
