@@ -73,6 +73,23 @@ test('标记完成后首页显示本地学习进度', async ({ page }) => {
   ).toHaveText('已完成');
 });
 
+test('过期记忆选择删除也能通过记忆体检', async ({ page }) => {
+  await page.goto('/chapter/memory-review');
+
+  await page.locator('[data-memory-id="stable"] select').selectOption('keep');
+  await page.locator('[data-memory-id="outdated"] select').selectOption('delete');
+  await page.locator('[data-memory-id="private"] select').selectOption('delete');
+  await page.locator('[data-memory-id="unverified"] select').selectOption('delete');
+  await page.locator('[data-check-memory]').click();
+
+  await expect(page.locator('[data-memory-status]')).toHaveText(
+    '记忆体检完成：四条都处理正确。',
+  );
+  await expect(
+    page.locator('[data-memory-id="outdated"] .memory-feedback'),
+  ).toContainText('判断正确');
+});
+
 test('第一次任务可只用键盘完成', async ({ page }) => {
   await page.goto('/chapter/first-task');
   const nextButton = page.locator('[data-next-step]');

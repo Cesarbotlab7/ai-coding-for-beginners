@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   assessAutomationReadiness,
   buildPrompt,
+  isMemoryChoiceCorrect,
   recommendTaskSetup,
   scorePromptDraft,
 } from '../../src/lib/workbuddy-labs';
@@ -142,5 +143,15 @@ describe('自动化上线检查', () => {
         '保持 WorkBuddy 运行',
       ]),
     );
+  });
+});
+
+describe('记忆体检答案', () => {
+  it('过期截止日期允许改写或删除，但不允许保留', () => {
+    const acceptedChoices = ['edit', 'delete'];
+
+    expect(isMemoryChoiceCorrect('edit', acceptedChoices)).toBe(true);
+    expect(isMemoryChoiceCorrect('delete', acceptedChoices)).toBe(true);
+    expect(isMemoryChoiceCorrect('keep', acceptedChoices)).toBe(false);
   });
 });

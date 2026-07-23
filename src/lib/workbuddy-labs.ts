@@ -37,6 +37,13 @@ function hasValue(value: string) {
   return value.trim().length > 0;
 }
 
+export function isMemoryChoiceCorrect(
+  choice: string,
+  acceptedChoices: readonly string[],
+): boolean {
+  return acceptedChoices.includes(choice);
+}
+
 export function scorePromptDraft(draft: PromptDraft): {
   score: number;
   missing: string[];

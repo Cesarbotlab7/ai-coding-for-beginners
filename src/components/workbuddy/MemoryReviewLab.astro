@@ -3,25 +3,25 @@ const memories = [
   {
     id: 'stable',
     text: '回答使用简体中文，先给结论。',
-    correct: 'keep',
+    correct: ['keep'],
     reason: '这是稳定、长期有效的表达偏好，可以保留。',
   },
   {
     id: 'outdated',
     text: '当前项目的周报必须在 2026 年 6 月 30 日前交付。',
-    correct: 'edit',
+    correct: ['edit', 'delete'],
     reason: '截止日期已经过期，应改成仍然有效的项目规则或删除。',
   },
   {
     id: 'private',
     text: '我的家庭住址和门禁信息是……',
-    correct: 'delete',
+    correct: ['delete'],
     reason: '任务不需要这类敏感信息，应删除并避免再次提交。',
   },
   {
     id: 'unverified',
     text: '客户已经批准最终预算。',
-    correct: 'delete',
+    correct: ['delete'],
     reason: '未经核验的关键事实不应作为长期记忆继续影响任务。',
   },
 ];
@@ -56,10 +56,12 @@ const memories = [
 </section>
 
 <script>
+  import { isMemoryChoiceCorrect } from '../../lib/workbuddy-labs';
+
   document.querySelectorAll<HTMLElement>('[data-memory-lab]').forEach((root) => {
     const memories = JSON.parse(root.dataset.memories ?? '[]') as Array<{
       id: string;
-      correct: string;
+      correct: string[];
       reason: string;
     }>;
     const button = root.querySelector<HTMLButtonElement>('[data-check-memory]');
@@ -73,7 +75,7 @@ const memories = [
         const select = card?.querySelector<HTMLSelectElement>('select');
         const feedback = card?.querySelector<HTMLElement>('.memory-feedback');
         if (!card || !select || !feedback) return;
-        const correct = select.value === memory.correct;
+        const correct = isMemoryChoiceCorrect(select.value, memory.correct);
         if (correct) correctCount += 1;
         card.classList.toggle('selected', correct);
         feedback.textContent = `${correct ? '判断正确。' : '再想想。'}${memory.reason}`;
