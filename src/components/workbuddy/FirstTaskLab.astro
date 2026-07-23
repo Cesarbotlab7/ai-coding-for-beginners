@@ -1,47 +1,67 @@
+---
+import WorkBuddyShell from './WorkBuddyShell.astro';
+---
 <section class="wb-lab" data-first-task-lab>
   <header class="wb-lab__header">
     <span class="wb-lab__eyebrow">互动 06</span>
-    <h2 class="wb-lab__title">完整走一遍第一次任务</h2>
+    <h2 class="wb-lab__title">在真实任务页里跑通第一单</h2>
     <p class="wb-lab__description">练习数据是虚构的。你只是在网页里模拟，不会读写电脑文件。</p>
   </header>
 
-  <div class="task-workbench">
-    <section class="wb-card">
-      <span class="wb-label">任务设置</span>
-      <dl>
-        <div><dt>工作区</dt><dd data-workspace>未选择</dd></div>
-        <div><dt>素材</dt><dd data-input>未添加</dd></div>
-        <div><dt>模式</dt><dd data-mode>未选择</dd></div>
-        <div><dt>权限</dt><dd>默认权限</dd></div>
-      </dl>
-    </section>
+  <WorkBuddyShell
+    view="task"
+    taskTitle="把会议记录整理成正式纪要"
+    workspace="选择工作空间"
+    permission="默认权限"
+    artifactEmpty={false}
+  >
+    <div slot="conversation" class="task-conversation">
+      <article class="task-user-message">
+        <p>请把 meeting-notes.txt 整理成正式会议纪要，只使用原文信息，输出为 meeting-summary.md。</p>
+        <span class="task-attachment"><span aria-hidden="true">▧</span><span data-input>未添加素材</span></span>
+      </article>
 
-    <section class="wb-card execution-panel">
-      <span class="wb-label">执行过程</span>
-      <h3 data-step-title>第 1 步：选择工作区</h3>
-      <p data-step-copy>选择独立的“WorkBuddy练习/第一次任务”。</p>
-      <div class="plan-preview" hidden data-plan>
-        <ol>
-          <li>读取 meeting-notes.txt</li>
-          <li>只提取明确出现的结论与待办</li>
-          <li>生成 Markdown 纪要</li>
-          <li>保存为 meeting-summary.md</li>
-        </ol>
-      </div>
-      <button type="button" class="primary" data-next-step>完成这一步</button>
-    </section>
+      <article class="task-agent-message">
+        <span class="task-agent-mark" aria-hidden="true">W</span>
+        <div>
+          <div class="task-step-meta">
+            <span data-mode>默认模式</span>
+            <span>默认权限</span>
+          </div>
+          <h3 data-step-title>第 1 步：选择工作区</h3>
+          <p data-step-copy>点击输入框下方“选择工作空间”，建立独立的练习目录。</p>
+          <div class="task-plan" hidden data-plan>
+            <p>执行计划</p>
+            <ol>
+              <li>读取 meeting-notes.txt</li>
+              <li>只提取明确出现的结论与待办</li>
+              <li>生成 Markdown 纪要</li>
+              <li>保存为 meeting-summary.md</li>
+            </ol>
+          </div>
+          <button type="button" class="task-next primary" data-next-step>完成这一步</button>
+        </div>
+      </article>
+    </div>
 
-    <section class="wb-card result-panel">
-      <span class="wb-label">结果与产物</span>
-      <p data-result-empty>任务还没有执行。</p>
-      <div hidden data-artifact>
-        <h3 class="wb-mono">meeting-summary.md</h3>
-        <p><strong>关键结论：</strong>新版帮助中心周五上线。</p>
-        <p><strong>行动项：</strong>小林周四前完成首轮校对。</p>
-        <p class="wb-status success">产物已生成。下一步不是庆祝，而是验收。</p>
-      </div>
-    </section>
-  </div>
+    <div slot="artifact">
+      <p data-result-empty class="artifact-pending">任务还没有生成产物。</p>
+      <article hidden data-artifact class="artifact-file">
+        <div class="artifact-file-name">
+          <span aria-hidden="true">M↓</span>
+          <strong>meeting-summary.md</strong>
+        </div>
+        <div class="artifact-preview">
+          <p class="artifact-heading">会议纪要</p>
+          <p><strong>关键结论</strong></p>
+          <p>新版帮助中心周五上线。</p>
+          <p><strong>行动项</strong></p>
+          <p>小林周四前完成首轮校对。</p>
+        </div>
+        <p class="artifact-ready">已生成 · 等待人工验收</p>
+      </article>
+    </div>
+  </WorkBuddyShell>
 
   <p class="wb-status" aria-live="polite" data-task-status>进度 0 / 6：先建立安全工作区。</p>
 </section>
@@ -50,18 +70,18 @@
   const taskSteps = [
     {
       title: '第 1 步：选择工作区',
-      copy: '选择独立的“WorkBuddy练习/第一次任务”。',
+      copy: '点击输入框下方“选择工作空间”，建立独立的练习目录。',
       status: '进度 0 / 6：先建立安全工作区。',
     },
     {
       title: '第 2 步：添加样例素材',
-      copy: '把虚构的 meeting-notes.txt 加入任务。',
+      copy: '从“更多操作 → 添加文件”加入虚构的 meeting-notes.txt。',
       status: '进度 1 / 6：工作区已经隔离。',
       workspace: 'WorkBuddy练习/第一次任务',
     },
     {
-      title: '第 3 步：选择 Plan',
-      copy: '这是多步骤文件任务，先看计划再执行。',
+      title: '第 3 步：开启 Plan',
+      copy: '从“更多操作 → 模式”开启 Plan；模型仍然可以保持 Auto。',
       status: '进度 2 / 6：样例素材已添加。',
       input: 'meeting-notes.txt',
     },
@@ -69,7 +89,7 @@
       title: '第 4 步：审查计划',
       copy: '检查输入文件、处理范围、输出格式和保存位置。',
       status: '进度 3 / 6：Plan + 默认权限。',
-      mode: 'Plan',
+      mode: 'Plan 已开启',
       showPlan: true,
     },
     {
@@ -79,8 +99,8 @@
       showPlan: true,
     },
     {
-      title: '第 6 步：打开产物',
-      copy: '找到 meeting-summary.md，打开后进入人工验收。',
+      title: '第 6 步：打开右侧产物',
+      copy: '在右侧“产物”中打开 meeting-summary.md，再进入人工验收。',
       status: '进度 5 / 6：任务执行完成，等待打开产物。',
       showArtifact: true,
     },
@@ -132,59 +152,138 @@
 </script>
 
 <style>
-  .task-workbench {
+  .task-conversation {
     display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: var(--space-3);
+    gap: var(--space-4);
   }
 
-  .task-workbench dl {
-    display: grid;
-    gap: var(--space-3);
-    margin: var(--space-4) 0 0;
-  }
-
-  .task-workbench dl div {
-    display: grid;
-    gap: var(--space-1);
-  }
-
-  .task-workbench dt {
-    color: var(--color-text-tertiary);
-    font-size: var(--text-xs);
-  }
-
-  .task-workbench dd {
-    margin: 0;
-    font-size: var(--text-sm);
-  }
-
-  .execution-panel h3,
-  .result-panel h3 {
-    margin: var(--space-4) 0 var(--space-2);
-    font-size: var(--text-base);
-  }
-
-  .execution-panel > p,
-  .result-panel p {
-    font-size: var(--text-sm);
-  }
-
-  .plan-preview {
-    margin-bottom: var(--space-4);
+  .task-user-message {
+    max-width: var(--wb-message-width);
+    justify-self: end;
     padding: var(--space-3);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-secondary);
+    border-radius: var(--wb-message-radius);
+    background: var(--wb-client-selected);
   }
 
-  .plan-preview ol {
+  .task-user-message p {
     margin: 0;
+    font-size: var(--wb-client-text-size);
+  }
+
+  .task-attachment {
+    display: inline-flex;
+    gap: var(--space-1);
+    align-items: center;
+    margin-block-start: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-control-radius);
+    background: var(--wb-client-panel-bg);
+    color: var(--wb-client-muted);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .task-agent-message {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .task-agent-mark {
+    display: inline-flex;
+    inline-size: var(--wb-profile-size);
+    block-size: var(--wb-profile-size);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--wb-client-accent);
+    color: var(--wb-client-on-accent);
+    font-weight: var(--font-medium);
+  }
+
+  .task-step-meta {
+    display: flex;
+    gap: var(--space-2);
+    margin-block-end: var(--space-2);
+  }
+
+  .task-step-meta span {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--wb-client-selected);
+    color: var(--wb-client-muted);
+    font-size: var(--wb-client-tiny-text);
+  }
+
+  .task-agent-message h3 {
+    margin: 0 0 var(--space-2);
     font-size: var(--text-sm);
   }
 
-  @media (max-width: 40rem) {
-    .task-workbench {
-      grid-template-columns: 1fr;
-    }
+  .task-agent-message p {
+    margin: 0 0 var(--space-3);
+    color: var(--wb-client-muted);
+    font-size: var(--wb-client-text-size);
+  }
+
+  .task-plan {
+    margin-block: var(--space-3);
+    padding: var(--space-3);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-control-radius);
+    background: var(--wb-client-panel-bg);
+  }
+
+  .task-plan p {
+    color: var(--wb-client-text);
+    font-weight: var(--font-medium);
+  }
+
+  .task-plan ol {
+    margin: 0;
+    padding-inline-start: var(--space-5);
+    color: var(--wb-client-muted);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .task-next {
+    min-height: var(--wb-menu-row-height);
+  }
+
+  .artifact-pending {
+    margin: var(--space-7) 0;
+    color: var(--wb-client-subtle);
+    text-align: center;
+  }
+
+  .artifact-file-name {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding-block-end: var(--space-3);
+    border-block-end: var(--border-hairline) solid var(--wb-client-divider);
+  }
+
+  .artifact-preview {
+    margin-block-start: var(--space-3);
+    padding: var(--space-3);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-control-radius);
+  }
+
+  .artifact-preview p {
+    margin: 0 0 var(--space-2);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .artifact-preview .artifact-heading {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+  }
+
+  .artifact-ready {
+    margin: var(--space-3) 0 0;
+    color: var(--wb-client-success);
+    font-size: var(--wb-client-small-text);
   }
 </style>

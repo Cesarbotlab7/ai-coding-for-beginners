@@ -1,27 +1,57 @@
+---
+import WorkBuddyShell from './WorkBuddyShell.astro';
+---
 <section class="wb-lab" data-acceptance-lab>
   <header class="wb-lab__header">
     <span class="wb-lab__eyebrow">互动 08</span>
-    <h2 class="wb-lab__title">找出这份“已完成”产物的问题</h2>
-    <p class="wb-lab__description">AI 说完成，只代表它停止执行，不代表产物合格。</p>
+    <h2 class="wb-lab__title">打开右侧产物，找出“已完成”里的问题</h2>
+    <p class="wb-lab__description">AI 停止执行不等于产物合格。先看真实任务页中的对话和产物，再逐项验收。</p>
   </header>
 
-  <div class="acceptance-layout">
-    <article class="wb-card flawed-artifact">
-      <span class="wb-label">AI 交付</span>
-      <h3 class="wb-mono">meeting-summary.txt</h3>
-      <p><strong>结论：</strong>新版帮助中心下周上线。</p>
-      <p><strong>待办：</strong>尽快完成校对。</p>
-      <p><strong>保存位置：</strong>未说明。</p>
-    </article>
+  <WorkBuddyShell
+    view="task"
+    taskTitle="把会议记录整理成正式纪要"
+    workspace="WorkBuddy练习/第一次任务"
+    permission="默认权限"
+    artifactEmpty={false}
+  >
+    <div slot="conversation" class="review-conversation">
+      <article class="review-user-message">
+        请把 meeting-notes.txt 整理成 Markdown 会议纪要，保留原文日期，并列出负责人、截止时间和保存位置。
+      </article>
+      <article class="review-agent-message">
+        <span class="review-agent-mark" aria-hidden="true">W</span>
+        <div>
+          <p>任务已完成，会议纪要已经生成。</p>
+          <div class="review-response-tools" aria-hidden="true">□　♡　♧　⋯　 Auto · 8秒</div>
+        </div>
+      </article>
+    </div>
 
-    <fieldset class="review-list">
-      <legend>你发现了哪些问题？</legend>
-      <label><input type="checkbox" value="format" /> 文件格式不是要求的 Markdown</label>
-      <label><input type="checkbox" value="date" /> “下周”不是原记录里的“周五”</label>
-      <label><input type="checkbox" value="owner" /> 待办缺少负责人和截止时间</label>
-      <label><input type="checkbox" value="path" /> 没有说明保存位置</label>
-    </fieldset>
-  </div>
+    <article slot="artifact" class="flawed-artifact">
+      <div class="flawed-file-name">
+        <span aria-hidden="true">T</span>
+        <strong>meeting-summary.txt</strong>
+      </div>
+      <div class="flawed-preview">
+        <p class="flawed-heading">会议纪要</p>
+        <p><strong>结论</strong></p>
+        <p>新版帮助中心下周上线。</p>
+        <p><strong>待办</strong></p>
+        <p>尽快完成校对。</p>
+        <p><strong>保存位置</strong></p>
+        <p>未说明。</p>
+      </div>
+    </article>
+  </WorkBuddyShell>
+
+  <fieldset class="review-list">
+    <legend>对照原始要求，你发现了哪些问题？</legend>
+    <label><input type="checkbox" value="format" /> 文件格式不是要求的 Markdown</label>
+    <label><input type="checkbox" value="date" /> “下周”不是原记录里的“周五”</label>
+    <label><input type="checkbox" value="owner" /> 待办缺少负责人和截止时间</label>
+    <label><input type="checkbox" value="path" /> 没有说明保存位置</label>
+  </fieldset>
 
   <p class="wb-status" aria-live="polite" data-review-status>已发现 0 / 4 个问题。</p>
   <div class="repair-prompt" hidden data-repair>
@@ -55,19 +85,78 @@
 </script>
 
 <style>
-  .acceptance-layout {
+  .review-conversation {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
+    gap: var(--space-5);
   }
 
-  .flawed-artifact h3 {
-    margin: var(--space-4) 0;
+  .review-user-message {
+    max-width: var(--wb-message-width);
+    justify-self: end;
+    padding: var(--space-3);
+    border-radius: var(--wb-message-radius);
+    background: var(--wb-client-selected);
+    font-size: var(--wb-client-text-size);
+  }
+
+  .review-agent-message {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .review-agent-mark {
+    display: inline-flex;
+    inline-size: var(--wb-profile-size);
+    block-size: var(--wb-profile-size);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--wb-client-accent);
+    color: var(--wb-client-on-accent);
+    font-weight: var(--font-medium);
+  }
+
+  .review-agent-message p {
+    margin: var(--space-1) 0 var(--space-4);
+    font-size: var(--wb-client-text-size);
+  }
+
+  .review-response-tools {
+    color: var(--wb-client-subtle);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .flawed-file-name {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding-block-end: var(--space-3);
+    border-block-end: var(--border-hairline) solid var(--wb-client-divider);
+  }
+
+  .flawed-preview {
+    margin-block-start: var(--space-3);
+    padding: var(--space-3);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-control-radius);
+  }
+
+  .flawed-preview p {
+    margin: 0 0 var(--space-2);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .flawed-preview .flawed-heading {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
   }
 
   .review-list {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-3);
+    margin-block-start: var(--space-5);
     padding: var(--space-4);
     border: var(--border-hairline) solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -100,7 +189,7 @@
   }
 
   @media (max-width: 40rem) {
-    .acceptance-layout {
+    .review-list {
       grid-template-columns: 1fr;
     }
   }

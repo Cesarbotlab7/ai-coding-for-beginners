@@ -107,20 +107,6 @@ const chapters = CURRICULUM.map((lesson) => {
       })}
     </section>
 
-    <section class="source-note">
-      <p class="section-label">事实来源</p>
-      <h2>教程不是照搬一篇文章</h2>
-      <p>
-        操作事实优先使用
-        <a href="https://www.codebuddy.cn/docs/workbuddy/" target="_blank" rel="noreferrer">WorkBuddy 官方文档</a>
-        和真实客户端核验；教学顺序参考
-        <a href="https://x.com/XiaohuiAI666/status/2071830585216291050" target="_blank" rel="noreferrer">程序员小灰上篇</a>
-        与
-        <a href="https://x.com/XiaohuiAI666/status/2072156656323232245" target="_blank" rel="noreferrer">完结篇</a>。
-        每章都标明核验日期和版本。
-      </p>
-    </section>
-
     <footer class="site-footer">
       <p>作者：César · 面向完全零基础用户的独立教程</p>
       <p>内容版权所有；示例数据均为虚构，不构成法律、财务或其他专业意见。</p>
@@ -246,8 +232,7 @@ const chapters = CURRICULUM.map((lesson) => {
   }
 
   .outcomes > div,
-  .progress-card,
-  .source-note {
+  .progress-card {
     padding: var(--space-5);
     border: var(--border-hairline) solid var(--color-border);
     border-radius: var(--radius-xl);
@@ -255,14 +240,12 @@ const chapters = CURRICULUM.map((lesson) => {
   }
 
   .outcomes h2,
-  .progress-card h2,
-  .source-note h2 {
+  .progress-card h2 {
     margin-bottom: var(--space-2);
     font-size: var(--text-lg);
   }
 
-  .outcomes p:last-child,
-  .source-note p:last-child {
+  .outcomes p:last-child {
     margin: 0;
     color: var(--color-text-secondary);
   }
@@ -391,10 +374,6 @@ const chapters = CURRICULUM.map((lesson) => {
     margin-bottom: var(--space-3);
     color: var(--color-text-secondary);
     font-size: var(--text-sm);
-  }
-
-  .source-note {
-    margin-top: var(--space-8);
   }
 
   .site-footer {

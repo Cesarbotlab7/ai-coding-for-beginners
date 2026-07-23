@@ -62,6 +62,35 @@ test('工作模式和权限会根据任务风险分别推荐', async ({ page }) 
   await expect(lab.locator('[data-recommendation]')).toContainText('风险较高');
 });
 
+test('界面地图复刻当前 WorkBuddy 任务页并在手机内横向查看', async ({ page }) => {
+  await page.goto('/chapter/interface-map');
+  const shell = page.locator('[data-workbuddy-shell]');
+
+  await expect(shell).toContainText('WorkBuddy v5.2.6');
+  await expect(shell.locator('[data-wb-nav]')).toHaveCount(6);
+  await expect(shell.getByRole('button', { name: '更多操作' })).toBeVisible();
+  await expect(shell.getByRole('button', { name: 'Auto' })).toBeVisible();
+  await expect(shell.getByRole('button', { name: '选择工作空间' })).toBeVisible();
+  await expect(shell.getByRole('button', { name: '默认权限' })).toBeVisible();
+  await expect(shell.locator('[data-artifact-panel]')).toContainText('产物');
+
+  await expect(shell.locator('[data-menu-panel="more"]')).toBeHidden();
+  await shell.getByRole('button', { name: '更多操作' }).click();
+  await expect(shell.locator('[data-menu-panel="more"]')).toBeVisible();
+  await expect(shell.locator('[data-mode-menu]')).toContainText('计划 Plan');
+  await expect(shell.locator('[data-mode-menu]')).toContainText('仅问答 Ask');
+
+  await page.setViewportSize({ width: 360, height: 800 });
+  const overflow = await page.evaluate(() => {
+    const scroller = document.querySelector<HTMLElement>('[data-workbuddy-scroll]');
+    return {
+      page: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      shell: Boolean(scroller && scroller.scrollWidth > scroller.clientWidth),
+    };
+  });
+  expect(overflow).toEqual({ page: false, shell: true });
+});
+
 test('标记完成后首页显示本地学习进度', async ({ page }) => {
   await page.goto('/chapter/what-is-workbuddy');
   await page.locator('[data-complete-button]').click();

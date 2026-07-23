@@ -94,7 +94,7 @@ describe('任务模式与权限推荐', () => {
     });
   });
 
-  it('简单、可恢复的单步文件任务可以使用 Craft', () => {
+  it('简单、可恢复的单步文件任务使用默认模式', () => {
     expect(
       recommendTaskSetup({
         modifiesFiles: true,
@@ -103,7 +103,7 @@ describe('任务模式与权限推荐', () => {
         reversible: true,
       }),
     ).toEqual({
-      workMode: 'Craft',
+      workMode: '默认模式',
       permissionMode: '默认权限',
       reason: '任务单一且可恢复，可以直接执行，但仍保留安全确认。',
     });

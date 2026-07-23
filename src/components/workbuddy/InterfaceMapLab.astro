@@ -1,49 +1,33 @@
+---
+import WorkBuddyShell from './WorkBuddyShell.astro';
+---
 <section class="wb-lab" data-interface-map>
   <header class="wb-lab__header">
     <span class="wb-lab__eyebrow">互动 05</span>
-    <h2 class="wb-lab__title">点一遍 WorkBuddy 的任务页</h2>
-    <p class="wb-lab__description">这是教学用简化界面，不逐像素复制真实客户端。</p>
+    <h2 class="wb-lab__title">在当前 WorkBuddy 界面上点一遍</h2>
+    <p class="wb-lab__description">布局和控件按 WorkBuddy v5.2.6 客户端重建；示例任务和账号为虚构数据。</p>
   </header>
 
-  <div class="workbench">
-    <section class="workbench-panel side">
-      <h3>左边：你要去哪</h3>
-      <button type="button" data-point="tasks">新建任务</button>
-      <button type="button" data-point="assistant">助理</button>
-      <button type="button" data-point="experts">专家与技能</button>
-    </section>
+  <WorkBuddyShell interactiveMap={true} artifactEmpty={true} />
 
-    <section class="workbench-panel conversation">
-      <h3>中间：任务怎么推进</h3>
-      <div class="wb-card wb-mono">把 meeting-notes.txt 整理成正式纪要。</div>
-      <div class="wb-actions">
-        <button type="button" data-point="mode">Plan</button>
-        <button type="button" data-point="workspace">练习工作区</button>
-        <button type="button" data-point="permission">默认权限</button>
-      </div>
-    </section>
-
-    <section class="workbench-panel result">
-      <h3>右边：交付了什么</h3>
-      <button type="button" data-point="artifact">产物</button>
-      <div class="wb-card wb-mono">meeting-summary.md</div>
-    </section>
-  </div>
-
-  <div class="wb-status" aria-live="polite" data-map-explanation>
-    先点击任意一个控件，查看它负责什么。
+  <div class="wb-status map-status" aria-live="polite" data-map-explanation>
+    先点击左侧导航、输入框下方控件或右侧“产物”，查看它负责什么。
   </div>
 </section>
 
 <script>
   const explanations = {
-    tasks: '新建任务：每个任务有独立对话和工作区。真正处理文件从这里开始。',
-    assistant: '助理：从手机或即时通讯工具远程触发电脑上的 WorkBuddy。',
-    experts: '专家与技能：一个提供领域判断，一个提供稳定操作方法。',
-    mode: '工作模式：Ask 只了解，Plan 先审计划，Craft 直接执行。',
-    workspace: '工作区：本次任务主要读取和保存文件的范围。',
-    permission: '权限：默认权限会在敏感动作前停下来让你确认。',
-    artifact: '产物：WorkBuddy 交付的目标文件。打开它，才能开始验收。',
+    tasks: '新建任务：从这里开始一个独立任务。左栏下方会保留任务历史。',
+    assistant: '助理：用于从手机或外部入口触发电脑上的 WorkBuddy。',
+    project: '项目：把同一目标下的资料、任务和上下文组织在一起。',
+    experts: '专家·技能·连接器：分别提供领域判断、稳定方法和外部应用连接。',
+    automation: '自动化：把已经手动验收过的流程设成定时或触发执行。',
+    more: '更多：资料库和灵感等扩展入口放在这里。',
+    'more-actions': '更多操作：添加文件，以及选择默认模式、Plan 或 Ask；专家、技能和连接器也从这里调用。',
+    model: 'Auto：这是模型选择。它和工作模式、权限不是同一个开关。',
+    workspace: '选择工作空间：决定本次任务主要读取和保存文件的范围。',
+    permission: '默认权限：超出安全沙箱时会停下来请求你的允许。',
+    artifact: '产物：WorkBuddy 交付的文件会出现在右栏。打开文件后再开始验收。',
   };
 
   document.querySelectorAll<HTMLElement>('[data-interface-map]').forEach((root) => {
@@ -51,46 +35,22 @@
     const explanation = root.querySelector<HTMLElement>('[data-map-explanation]');
     buttons.forEach((button) => {
       button.addEventListener('click', () => {
-        buttons.forEach((item) => item.removeAttribute('aria-current'));
-        button.setAttribute('aria-current', 'true');
+        buttons.forEach((item) => item.removeAttribute('data-highlighted'));
+        button.setAttribute('data-highlighted', 'true');
         const key = button.dataset.point as keyof typeof explanations;
-        if (explanation) explanation.textContent = explanations[key];
+        if (explanation && key in explanations) explanation.textContent = explanations[key];
       });
     });
   });
 </script>
 
 <style>
-  .workbench {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr) minmax(0, 1fr);
-    gap: var(--space-3);
+  .map-status {
+    min-height: var(--control-height);
   }
 
-  .workbench-panel {
-    display: grid;
-    align-content: start;
-    gap: var(--space-3);
-    min-height: var(--panel-min-height);
-    padding: var(--space-4);
-    border: var(--border-hairline) solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-bg);
-  }
-
-  .workbench-panel h3 {
-    font-size: var(--text-sm);
-  }
-
-  .workbench-panel button[aria-current="true"] {
-    border-color: var(--color-text-info);
-    background: var(--color-bg-info);
-    color: var(--color-text-info);
-  }
-
-  @media (max-width: 40rem) {
-    .workbench {
-      grid-template-columns: 1fr;
-    }
+  [data-interface-map] :global([data-point][data-highlighted="true"]) {
+    outline: var(--focus-ring-width) solid var(--color-text-info);
+    outline-offset: var(--space-1);
   }
 </style>

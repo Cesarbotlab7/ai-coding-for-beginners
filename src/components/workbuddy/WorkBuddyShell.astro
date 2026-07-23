@@ -1,0 +1,904 @@
+---
+import WorkBuddyIcon from './WorkBuddyIcon.astro';
+
+interface Props {
+  view?: 'new-task' | 'task';
+  taskTitle?: string;
+  workspace?: string;
+  permission?: string;
+  model?: string;
+  openMenu?: 'mode' | 'workspace' | 'permission';
+  interactiveMap?: boolean;
+  artifactEmpty?: boolean;
+}
+
+const {
+  view = 'new-task',
+  taskTitle = '整理会议记录',
+  workspace = '选择工作空间',
+  permission = '默认权限',
+  model = 'Auto',
+  openMenu,
+  interactiveMap = false,
+  artifactEmpty = true,
+} = Astro.props;
+
+const navigation = [
+  { key: 'tasks', label: '新建任务', icon: 'plus' as const },
+  { key: 'assistant', label: '助理', icon: 'assistant' as const },
+  { key: 'project', label: '项目', icon: 'project' as const },
+  { key: 'experts', label: '专家·技能·连接器', icon: 'tools' as const },
+  { key: 'automation', label: '自动化', icon: 'automation' as const },
+  { key: 'more', label: '更多', meta: '资料库·灵感', icon: 'more' as const },
+];
+---
+<div class="wb-client-viewport" data-workbuddy-scroll>
+  <p class="wb-client-mobile-hint">这是桌面客户端比例；在手机上可左右滑动查看完整界面。</p>
+  <div class="wb-client" data-workbuddy-shell data-view={view}>
+    <aside class="wb-client-sidebar" aria-label="WorkBuddy 功能导航">
+      <div class="wb-window-tools" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+
+      <div class="wb-sidebar-toolbar">
+        <span class="wb-device-switch"><WorkBuddyIcon name="panel" /></span>
+        <span class="wb-sidebar-tool"><WorkBuddyIcon name="panel" /></span>
+        <span class="wb-sidebar-tool"><WorkBuddyIcon name="search" /></span>
+        <span class="wb-sidebar-tool"><WorkBuddyIcon name="filter" /></span>
+      </div>
+
+      <p class="wb-version">WorkBuddy v5.2.6</p>
+
+      <nav class="wb-client-nav">
+        {navigation.map((item, index) => (
+          <button
+            type="button"
+            class:list={['wb-nav-item', { active: index === 0 }]}
+            data-wb-nav
+            data-point={interactiveMap ? item.key : undefined}
+            aria-current={index === 0 ? 'page' : undefined}
+          >
+            <WorkBuddyIcon name={item.icon} />
+            <span>{item.label}</span>
+            {item.meta && <small>{item.meta}</small>}
+          </button>
+        ))}
+      </nav>
+
+      <div class="wb-sidebar-history">
+        <div class="wb-sidebar-section-title">
+          <span>任务 (3)</span>
+          <span aria-hidden="true">⌄</span>
+        </div>
+        <button type="button" class:list={['wb-history-item', { active: view === 'task' }]}>
+          <span>{taskTitle}</span><small>刚刚</small>
+        </button>
+        <button type="button" class="wb-history-item">
+          <span>整理产品反馈</span><small>昨天</small>
+        </button>
+        <button type="button" class="wb-history-item">
+          <span>生成周报提纲</span><small>2天前</small>
+        </button>
+        <button type="button" class="wb-history-more">查看更多</button>
+
+        <div class="wb-sidebar-section-title space-title">
+          <span>空间 (1)</span>
+          <span aria-hidden="true">⌄</span>
+        </div>
+        <div class="wb-space-row">
+          <WorkBuddyIcon name="folder" />
+          <span>新手练习区</span>
+        </div>
+      </div>
+
+      <div class="wb-sidebar-profile">
+        <span class="wb-profile-mark"><WorkBuddyIcon name="sparkles" /></span>
+        <span>体验账号</span>
+        <span class="wb-profile-actions" aria-hidden="true">◌　?</span>
+      </div>
+    </aside>
+
+    <main class="wb-client-main">
+      <div class="wb-promo">
+        <WorkBuddyIcon name="gift" />
+        <span>做任务赢积分好礼</span>
+        <WorkBuddyIcon name="chevron" />
+      </div>
+
+      {view === 'new-task' ? (
+        <section class="wb-new-task" aria-label="新建任务">
+          <div class="wb-welcome">
+            <h3>WorkBuddy</h3>
+            <p>你的职场超能力</p>
+          </div>
+          <div class="wb-scene-tabs" role="tablist" aria-label="任务场景">
+            <button type="button" role="tab" aria-selected="true">日常办公</button>
+            <button type="button" role="tab" aria-selected="false">代码开发</button>
+            <button type="button" role="tab" aria-selected="false">设计创意</button>
+          </div>
+          <div class="wb-capabilities">
+            <button type="button"><WorkBuddyIcon name="file" />文档处理</button>
+            <button type="button"><WorkBuddyIcon name="tools" />金融服务</button>
+            <button type="button"><WorkBuddyIcon name="automation" />数据分析及可视化</button>
+            <button type="button">更多</button>
+          </div>
+          <slot name="conversation" />
+          <div class="wb-mascot" aria-hidden="true">
+            <span class="wb-mascot-ear left"></span>
+            <span class="wb-mascot-ear right"></span>
+            <span class="wb-mascot-face">••</span>
+          </div>
+          <div class="wb-composer-wrap">
+            <slot name="composer">
+              <p class="wb-composer-placeholder">
+                今天帮你做些什么？ <span>@ 引用对话文件，/ 调用技能与指令</span>
+              </p>
+            </slot>
+            <div class="wb-composer-actions">
+              <button
+                type="button"
+                class="wb-icon-button wb-menu-trigger"
+                aria-label="更多操作"
+                aria-expanded={openMenu === 'mode' ? 'true' : 'false'}
+                data-menu-trigger="more"
+                data-point={interactiveMap ? 'more-actions' : undefined}
+              >
+                <WorkBuddyIcon name="plus" />
+              </button>
+              <div class="wb-composer-spacer"></div>
+              <button
+                type="button"
+                class="wb-control-button"
+                data-point={interactiveMap ? 'model' : undefined}
+              >
+                <WorkBuddyIcon name="model" /><span>{model}</span><span aria-hidden="true">⌄</span>
+              </button>
+              <button type="button" class="wb-icon-button" aria-label="语音输入">
+                <WorkBuddyIcon name="microphone" />
+              </button>
+              <button type="button" class="wb-send-button" aria-label="发送任务">
+                <WorkBuddyIcon name="send" />
+              </button>
+            </div>
+            <div class="wb-composer-settings">
+              <button
+                type="button"
+                class="wb-setting-button"
+                aria-expanded={openMenu === 'workspace' ? 'true' : 'false'}
+                data-menu-trigger="workspace"
+                data-point={interactiveMap ? 'workspace' : undefined}
+              >
+                <WorkBuddyIcon name="folder" /><span data-workspace>{workspace}</span><span aria-hidden="true">⌄</span>
+              </button>
+              <button
+                type="button"
+                class="wb-setting-button"
+                aria-expanded={openMenu === 'permission' ? 'true' : 'false'}
+                data-menu-trigger="permission"
+                data-point={interactiveMap ? 'permission' : undefined}
+              >
+                <WorkBuddyIcon name="shield" /><span>{permission}</span><span aria-hidden="true">⌄</span>
+              </button>
+            </div>
+
+            <div class="wb-more-menu wb-floating-menu" data-menu-panel="more" hidden={openMenu !== 'mode'}>
+              <div class="wb-more-menu-list">
+                <button type="button"><WorkBuddyIcon name="paperclip" />添加文件<WorkBuddyIcon name="chevron" /></button>
+                <button type="button" aria-current="true"><WorkBuddyIcon name="sparkles" />模式<WorkBuddyIcon name="chevron" /></button>
+                <button type="button"><WorkBuddyIcon name="assistant" />专家<WorkBuddyIcon name="chevron" /></button>
+                <button type="button"><WorkBuddyIcon name="tools" />技能<WorkBuddyIcon name="chevron" /></button>
+                <button type="button"><WorkBuddyIcon name="automation" />连接器<WorkBuddyIcon name="chevron" /></button>
+              </div>
+              <div class="wb-mode-menu" data-mode-menu>
+                <p>当前为默认模式，可高效执行并完成任务。</p>
+                <label><span>计划 Plan</span><input type="checkbox" data-plan-toggle /></label>
+                <label><span>仅问答 Ask</span><input type="checkbox" data-ask-toggle /></label>
+              </div>
+            </div>
+
+            <div class="wb-workspace-menu wb-floating-menu" data-menu-panel="workspace" hidden={openMenu !== 'workspace'}>
+              <label>
+                <span class="sr-only">搜索工作空间</span>
+                <WorkBuddyIcon name="search" />
+                <input type="search" placeholder="搜索工作空间" />
+              </label>
+              <p>未找到工作空间</p>
+              <button type="button"><WorkBuddyIcon name="plus" />新建工作空间</button>
+              <button type="button"><WorkBuddyIcon name="folder" />打开本地文件夹</button>
+            </div>
+
+            <div class="wb-permission-menu wb-floating-menu" data-menu-panel="permission" hidden={openMenu !== 'permission'}>
+              <p>当前为默认权限，所有操作都会在安全沙箱约束内进行，超出范围会请求你的允许。</p>
+              <label><span>允许完全访问</span><input type="checkbox" /></label>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section class="wb-task-view" aria-label="任务详情">
+          <header class="wb-task-header">
+            <h3>{taskTitle}</h3>
+            <button type="button" aria-label="任务更多选项"><WorkBuddyIcon name="more" /></button>
+          </header>
+          <div class="wb-conversation">
+            <slot name="conversation" />
+          </div>
+          <div class="wb-task-composer">
+            <p>继续追问或要求修改…</p>
+            <div>
+              <button type="button" class="wb-icon-button" aria-label="更多操作"><WorkBuddyIcon name="plus" /></button>
+              <span></span>
+              <button type="button" class="wb-control-button"><WorkBuddyIcon name="model" />{model}<span aria-hidden="true">⌄</span></button>
+              <button type="button" class="wb-icon-button" aria-label="语音输入"><WorkBuddyIcon name="microphone" /></button>
+              <button type="button" class="wb-send-button" aria-label="发送任务"><WorkBuddyIcon name="send" /></button>
+            </div>
+            <footer>
+              <button type="button" class="wb-setting-button"><WorkBuddyIcon name="folder" /><span data-workspace>{workspace}</span></button>
+              <button type="button" class="wb-setting-button"><WorkBuddyIcon name="shield" />{permission}</button>
+            </footer>
+          </div>
+          <p class="wb-ai-notice">内容由 AI 生成，请核实重要信息</p>
+        </section>
+      )}
+    </main>
+
+    <aside class="wb-client-artifact" data-artifact-panel aria-label="产物面板">
+      <div class="wb-artifact-toolbar">
+        <button type="button">概览</button>
+        <button type="button" aria-label="展开产物面板"><WorkBuddyIcon name="panel" /></button>
+      </div>
+      <div class="wb-artifact-title">
+        <button
+          type="button"
+          data-point={interactiveMap ? 'artifact' : undefined}
+        >产物</button>
+        <span aria-hidden="true">⌄</span>
+      </div>
+      <div class="wb-artifact-content">
+        <slot name="artifact">
+          {artifactEmpty && <p class="wb-artifact-empty">暂无内容</p>}
+        </slot>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-workbuddy-shell]').forEach((shell) => {
+    const triggers = [...shell.querySelectorAll<HTMLButtonElement>('[data-menu-trigger]')];
+    const panels = [...shell.querySelectorAll<HTMLElement>('[data-menu-panel]')];
+
+    const closeMenus = (except?: string) => {
+      panels.forEach((panel) => {
+        if (panel.dataset.menuPanel !== except) panel.hidden = true;
+      });
+      triggers.forEach((trigger) => {
+        const expanded = trigger.dataset.menuTrigger === except;
+        trigger.setAttribute('aria-expanded', String(expanded));
+      });
+    };
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const key = trigger.dataset.menuTrigger;
+        const panel = panels.find((item) => item.dataset.menuPanel === key);
+        if (!key || !panel) return;
+        const shouldOpen = panel.hidden;
+        closeMenus(shouldOpen ? key : undefined);
+        panel.hidden = !shouldOpen;
+      });
+    });
+  });
+</script>
+
+<style>
+  .wb-client-viewport {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-client-radius);
+    background: var(--wb-client-main-bg);
+  }
+
+  .wb-client-mobile-hint {
+    display: none;
+  }
+
+  .wb-client {
+    display: grid;
+    grid-template-columns: var(--wb-sidebar-width) minmax(0, 1fr) var(--wb-artifact-width);
+    width: 100%;
+    min-width: var(--wb-shell-min-width);
+    min-height: var(--wb-shell-height);
+    overflow: hidden;
+    background: var(--wb-client-main-bg);
+    color: var(--wb-client-text);
+    font-size: var(--wb-client-text-size);
+    line-height: var(--wb-client-line-height);
+  }
+
+  .wb-client button,
+  .wb-client input {
+    min-height: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .wb-client button {
+    padding: 0;
+    border: 0;
+    border-radius: var(--wb-control-radius);
+    background: transparent;
+    font-weight: var(--font-regular);
+  }
+
+  .wb-client button:hover {
+    background: var(--wb-client-hover);
+  }
+
+  .wb-client-sidebar {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: var(--space-3);
+    border-inline-end: var(--border-hairline) solid var(--wb-client-border);
+    background: var(--wb-client-sidebar-bg);
+  }
+
+  .wb-window-tools {
+    display: flex;
+    gap: var(--space-2);
+    height: var(--space-4);
+    align-items: center;
+  }
+
+  .wb-window-tools span {
+    inline-size: var(--wb-window-dot-size);
+    block-size: var(--wb-window-dot-size);
+    border-radius: var(--radius-pill);
+    background: var(--wb-client-border-strong);
+  }
+
+  .wb-sidebar-toolbar {
+    display: grid;
+    grid-template-columns: 1fr repeat(3, auto);
+    gap: var(--space-3);
+    align-items: center;
+    margin-block: var(--space-2) var(--space-4);
+  }
+
+  .wb-device-switch {
+    display: inline-flex;
+    width: var(--wb-device-switch-width);
+    height: var(--space-5);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--wb-client-accent);
+    color: var(--wb-client-on-accent);
+  }
+
+  .wb-sidebar-tool {
+    display: inline-flex;
+    color: var(--wb-client-muted);
+  }
+
+  .wb-version {
+    margin: 0 0 var(--space-2);
+    color: var(--wb-client-subtle);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .wb-client-nav {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .wb-nav-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-2);
+    min-height: var(--wb-nav-height) !important;
+    align-items: center;
+    padding-inline: var(--space-2) !important;
+    text-align: start;
+  }
+
+  .wb-nav-item.active {
+    background: var(--wb-client-selected);
+    font-weight: var(--font-medium);
+  }
+
+  .wb-nav-item small {
+    color: var(--wb-client-subtle);
+    font-size: var(--wb-client-tiny-text);
+  }
+
+  .wb-sidebar-history {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .wb-sidebar-section-title {
+    display: flex;
+    justify-content: space-between;
+    margin: var(--space-5) var(--space-2) var(--space-2);
+    color: var(--wb-client-subtle);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .wb-history-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: 100%;
+    min-height: var(--wb-history-height) !important;
+    gap: var(--space-2);
+    align-items: center;
+    padding-inline: var(--space-2) !important;
+    text-align: start;
+  }
+
+  .wb-history-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wb-history-item small,
+  .wb-history-more {
+    color: var(--wb-client-subtle) !important;
+    font-size: var(--wb-client-tiny-text) !important;
+  }
+
+  .wb-history-item.active {
+    background: var(--wb-client-selected);
+  }
+
+  .wb-history-more {
+    min-height: var(--wb-history-height) !important;
+    padding-inline: var(--space-2) !important;
+  }
+
+  .wb-space-row {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-2);
+  }
+
+  .wb-sidebar-profile {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-2);
+    font-weight: var(--font-medium);
+  }
+
+  .wb-profile-mark {
+    display: inline-flex;
+    inline-size: var(--wb-profile-size);
+    block-size: var(--wb-profile-size);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--wb-client-success);
+    color: var(--wb-client-on-accent);
+  }
+
+  .wb-profile-actions {
+    color: var(--wb-client-muted);
+  }
+
+  .wb-client-main {
+    position: relative;
+    min-width: 0;
+    background: var(--wb-client-main-bg);
+  }
+
+  .wb-promo {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: var(--space-4);
+    inset-inline-end: var(--space-4);
+    display: flex;
+    gap: var(--space-2);
+    min-height: var(--wb-promo-height);
+    align-items: center;
+    padding-inline: var(--space-3);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--radius-pill);
+    background: var(--wb-client-panel-bg);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .wb-new-task {
+    position: relative;
+    display: flex;
+    min-height: var(--wb-shell-height);
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-8) var(--wb-main-gutter);
+  }
+
+  .wb-welcome h3 {
+    font-size: var(--wb-client-title-size);
+    letter-spacing: var(--wb-title-tracking);
+  }
+
+  .wb-welcome p {
+    margin: 0 0 var(--space-4);
+    font-size: var(--wb-client-hero-size);
+    font-weight: var(--font-medium);
+    line-height: var(--wb-client-title-line-height);
+  }
+
+  .wb-scene-tabs {
+    display: inline-flex;
+    width: fit-content;
+    padding: var(--space-1);
+    border-radius: var(--wb-control-radius);
+    background: var(--wb-client-selected);
+  }
+
+  .wb-scene-tabs button {
+    min-height: var(--wb-chip-height);
+    padding-inline: var(--space-3);
+  }
+
+  .wb-scene-tabs button[aria-selected="true"] {
+    background: var(--wb-client-text);
+    color: var(--wb-client-on-accent);
+  }
+
+  .wb-capabilities {
+    display: flex;
+    gap: var(--space-2);
+    margin-block: var(--space-6) var(--space-3);
+  }
+
+  .wb-capabilities button {
+    display: inline-flex;
+    min-height: var(--wb-chip-height);
+    gap: var(--space-2);
+    align-items: center;
+    padding-inline: var(--space-3);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    background: var(--wb-client-panel-bg);
+  }
+
+  .wb-mascot {
+    position: absolute;
+    z-index: 2;
+    inset-inline-end: calc(var(--wb-main-gutter) + var(--space-5));
+    inset-block-start: var(--wb-mascot-top);
+    display: flex;
+    inline-size: var(--wb-mascot-size);
+    block-size: var(--wb-mascot-size);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    background: var(--wb-client-text);
+    color: var(--wb-client-success);
+  }
+
+  .wb-mascot-ear {
+    position: absolute;
+    inset-block-start: calc(var(--space-2) * -1);
+    inline-size: var(--space-3);
+    block-size: var(--space-3);
+    transform: rotate(45deg);
+    border-radius: var(--radius-sm);
+    background: var(--wb-client-text);
+  }
+
+  .wb-mascot-ear.left {
+    inset-inline-start: var(--space-2);
+  }
+
+  .wb-mascot-ear.right {
+    inset-inline-end: var(--space-2);
+  }
+
+  .wb-composer-wrap {
+    position: relative;
+    min-height: var(--wb-composer-height);
+    padding: var(--space-4) var(--space-4) var(--space-7);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-composer-radius);
+    background: var(--wb-client-panel-bg);
+  }
+
+  .wb-composer-placeholder {
+    margin: 0;
+    color: var(--wb-client-muted);
+  }
+
+  .wb-composer-placeholder span {
+    color: var(--wb-client-subtle);
+  }
+
+  .wb-composer-actions {
+    position: absolute;
+    inset-inline: var(--space-3);
+    inset-block-end: var(--space-8);
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .wb-composer-spacer {
+    flex: 1;
+  }
+
+  .wb-icon-button,
+  .wb-control-button,
+  .wb-send-button,
+  .wb-setting-button {
+    display: inline-flex;
+    min-height: var(--wb-round-control-size) !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wb-icon-button,
+  .wb-send-button {
+    inline-size: var(--wb-round-control-size);
+    border-radius: var(--radius-pill) !important;
+  }
+
+  .wb-control-button,
+  .wb-setting-button {
+    gap: var(--space-1);
+    padding-inline: var(--space-2) !important;
+  }
+
+  .wb-send-button {
+    background: var(--wb-client-disabled) !important;
+    color: var(--wb-client-on-accent) !important;
+  }
+
+  .wb-composer-settings {
+    position: absolute;
+    inset-inline: var(--space-3);
+    inset-block-end: var(--space-2);
+    display: flex;
+    gap: var(--space-2);
+    border-block-start: var(--border-hairline) solid var(--wb-client-divider);
+    padding-block-start: var(--space-1);
+  }
+
+  .wb-setting-button {
+    color: var(--wb-client-muted) !important;
+  }
+
+  .wb-floating-menu {
+    position: absolute;
+    z-index: 4;
+    inset-inline-start: var(--space-3);
+    inset-block-end: var(--wb-menu-bottom);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-menu-radius);
+    background: var(--wb-client-panel-bg);
+  }
+
+  .wb-floating-menu[hidden] {
+    display: none;
+  }
+
+  .wb-more-menu {
+    display: grid;
+    grid-template-columns: var(--wb-menu-column-width) var(--wb-menu-column-width);
+  }
+
+  .wb-more-menu-list,
+  .wb-mode-menu {
+    padding: var(--space-2);
+  }
+
+  .wb-more-menu-list {
+    border-inline-end: var(--border-hairline) solid var(--wb-client-divider);
+  }
+
+  .wb-more-menu-list button,
+  .wb-workspace-menu button {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    width: 100%;
+    min-height: var(--wb-menu-row-height);
+    gap: var(--space-2);
+    align-items: center;
+    padding-inline: var(--space-2);
+    text-align: start;
+  }
+
+  .wb-more-menu-list button[aria-current="true"] {
+    background: var(--wb-client-selected);
+  }
+
+  .wb-mode-menu p,
+  .wb-permission-menu p {
+    margin: 0;
+    padding: var(--space-2);
+    color: var(--wb-client-muted);
+    font-size: var(--wb-client-small-text);
+  }
+
+  .wb-mode-menu label,
+  .wb-permission-menu label {
+    display: flex;
+    min-height: var(--wb-menu-row-height);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2);
+  }
+
+  .wb-mode-menu input,
+  .wb-permission-menu input {
+    accent-color: var(--wb-client-accent);
+  }
+
+  .wb-workspace-menu {
+    width: calc(var(--wb-menu-column-width) * 1.4);
+    padding: var(--space-2);
+  }
+
+  .wb-workspace-menu label {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-2);
+    border-radius: var(--wb-control-radius);
+    background: var(--wb-client-selected);
+  }
+
+  .wb-workspace-menu input {
+    min-width: 0;
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+  }
+
+  .wb-workspace-menu p {
+    margin: 0;
+    padding: var(--space-5) var(--space-2);
+    border-block-end: var(--border-hairline) solid var(--wb-client-divider);
+    color: var(--wb-client-subtle);
+    text-align: center;
+  }
+
+  .wb-permission-menu {
+    width: calc(var(--wb-menu-column-width) * 1.6);
+    inset-inline-start: auto;
+    inset-inline-end: var(--space-3);
+  }
+
+  .wb-task-view {
+    display: grid;
+    min-height: var(--wb-shell-height);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    padding: var(--space-4) var(--wb-task-gutter) var(--space-2);
+  }
+
+  .wb-task-header {
+    display: flex;
+    min-height: var(--wb-task-header-height);
+    align-items: center;
+    justify-content: space-between;
+    border-block-end: var(--border-hairline) solid var(--wb-client-divider);
+  }
+
+  .wb-task-header h3 {
+    font-size: var(--text-sm);
+  }
+
+  .wb-task-header button {
+    inline-size: var(--wb-round-control-size);
+  }
+
+  .wb-conversation {
+    min-height: 0;
+    overflow: auto;
+    padding: var(--space-5) 0;
+  }
+
+  .wb-task-composer {
+    min-height: var(--wb-task-composer-height);
+    padding: var(--space-3);
+    border: var(--border-hairline) solid var(--wb-client-border);
+    border-radius: var(--wb-composer-radius);
+    background: var(--wb-client-panel-bg);
+  }
+
+  .wb-task-composer > p {
+    margin: 0 0 var(--space-4);
+    color: var(--wb-client-subtle);
+  }
+
+  .wb-task-composer > div {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .wb-task-composer > div > span {
+    flex: 1;
+  }
+
+  .wb-task-composer footer {
+    display: flex;
+    gap: var(--space-2);
+    margin-block-start: var(--space-2);
+    padding-block-start: var(--space-1);
+    border-block-start: var(--border-hairline) solid var(--wb-client-divider);
+  }
+
+  .wb-ai-notice {
+    margin: var(--space-1) 0 0;
+    color: var(--wb-client-subtle);
+    font-size: var(--wb-client-tiny-text);
+    text-align: center;
+  }
+
+  .wb-client-artifact {
+    min-width: 0;
+    border-inline-start: var(--border-hairline) solid var(--wb-client-border);
+    background: var(--wb-client-panel-bg);
+  }
+
+  .wb-artifact-toolbar,
+  .wb-artifact-title {
+    display: flex;
+    min-height: var(--wb-task-header-height);
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--space-3);
+    border-block-end: var(--border-hairline) solid var(--wb-client-divider);
+  }
+
+  .wb-artifact-toolbar button:first-child {
+    padding-inline: var(--space-2);
+    font-weight: var(--font-medium);
+  }
+
+  .wb-artifact-title button {
+    padding-inline: var(--space-1);
+    font-weight: var(--font-medium);
+  }
+
+  .wb-artifact-toolbar button:last-child {
+    inline-size: var(--wb-round-control-size);
+  }
+
+  .wb-artifact-title {
+    min-height: var(--wb-artifact-title-height);
+    font-weight: var(--font-medium);
+  }
+
+  .wb-artifact-content {
+    padding: var(--space-3);
+  }
+
+  .wb-artifact-empty {
+    margin: var(--space-7) 0;
+    color: var(--wb-client-subtle);
+    text-align: center;
+  }
+
+  @media (max-width: 40rem) {
+    .wb-client-mobile-hint {
+      display: block;
+      min-width: var(--wb-shell-min-width);
+      margin: 0;
+      padding: var(--space-2) var(--space-3);
+      border-block-end: var(--border-hairline) solid var(--wb-client-border);
+      background: var(--wb-client-sidebar-bg);
+      color: var(--wb-client-muted);
+      font-size: var(--wb-client-small-text);
+    }
+  }
+</style>

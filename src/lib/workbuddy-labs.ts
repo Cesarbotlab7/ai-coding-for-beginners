@@ -65,7 +65,7 @@ export function buildPrompt(draft: PromptDraft): string {
 }
 
 export function recommendTaskSetup(profile: TaskProfile): {
-  workMode: 'Ask' | 'Plan' | 'Craft';
+  workMode: 'Ask' | 'Plan' | '默认模式';
   permissionMode: '默认权限';
   reason: string;
 } {
@@ -94,7 +94,7 @@ export function recommendTaskSetup(profile: TaskProfile): {
   }
 
   return {
-    workMode: 'Craft',
+    workMode: '默认模式',
     permissionMode: '默认权限',
     reason: '任务单一且可恢复，可以直接执行，但仍保留安全确认。',
   };

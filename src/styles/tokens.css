@@ -73,7 +73,7 @@
   --border-strong: 0.125rem;
   --content-width: 42.5rem;
   --home-width: 60rem;
-  --workbench-width: 65rem;
+  --workbench-width: 72rem;
   --control-height: 2.75rem;
   --page-gutter-mobile: 1rem;
   --focus-ring-width: 0.1875rem;
@@ -83,6 +83,62 @@
   --card-min-width: 14rem;
   --transition-fast: 120ms;
   --transition-base: 200ms;
+
+  /* WorkBuddy v5.2.6 客户端复刻 */
+  --wb-client-main-bg: #fbfbfb;
+  --wb-client-sidebar-bg: #f3f3f3;
+  --wb-client-panel-bg: #ffffff;
+  --wb-client-selected: #e8e8e8;
+  --wb-client-hover: #ededed;
+  --wb-client-border: #e3e3e3;
+  --wb-client-border-strong: #c8c8c8;
+  --wb-client-divider: #eeeeee;
+  --wb-client-text: #202020;
+  --wb-client-muted: #6c6c6c;
+  --wb-client-subtle: #9a9a9a;
+  --wb-client-on-accent: #ffffff;
+  --wb-client-accent: #7456f1;
+  --wb-client-success: #23b99a;
+  --wb-client-disabled: #a9a9a9;
+  --wb-client-radius: 0.875rem;
+  --wb-control-radius: 0.5rem;
+  --wb-composer-radius: 0.875rem;
+  --wb-menu-radius: 0.75rem;
+  --wb-sidebar-width: 13.5rem;
+  --wb-artifact-width: 15rem;
+  --wb-shell-min-width: 68rem;
+  --wb-shell-height: 40rem;
+  --wb-main-gutter: 4.5rem;
+  --wb-task-gutter: 3rem;
+  --wb-composer-height: 10.5rem;
+  --wb-task-composer-height: 7.5rem;
+  --wb-task-header-height: 3.25rem;
+  --wb-artifact-title-height: 2.75rem;
+  --wb-nav-height: 2.25rem;
+  --wb-history-height: 1.875rem;
+  --wb-chip-height: 2rem;
+  --wb-round-control-size: 2rem;
+  --wb-profile-size: 2rem;
+  --wb-window-dot-size: 0.5rem;
+  --wb-device-switch-width: 3rem;
+  --wb-promo-height: 2rem;
+  --wb-mascot-size: 3.25rem;
+  --wb-mascot-top: 20.5rem;
+  --wb-menu-column-width: 11rem;
+  --wb-menu-row-height: 2.5rem;
+  --wb-menu-bottom: 6.25rem;
+  --wb-message-width: 28rem;
+  --wb-message-radius: 0.75rem;
+  --wb-icon-size: 1rem;
+  --wb-icon-stroke: 1.75;
+  --wb-client-text-size: 0.75rem;
+  --wb-client-small-text: 0.6875rem;
+  --wb-client-tiny-text: 0.625rem;
+  --wb-client-title-size: 1.75rem;
+  --wb-client-hero-size: 2.25rem;
+  --wb-client-line-height: 1.45;
+  --wb-client-title-line-height: 1.2;
+  --wb-title-tracking: -0.025em;
 }
 
 @media (prefers-color-scheme: dark) {

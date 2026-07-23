@@ -4,6 +4,23 @@ import { describe, expect, it } from 'vitest';
 import { CURRICULUM } from '../../src/lib/curriculum';
 
 const chaptersDirectory = resolve(process.cwd(), 'content/chapters');
+const homePageSource = readFileSync(resolve(process.cwd(), 'src/pages/index.astro'), 'utf8');
+const chapterPageSource = readFileSync(
+  resolve(process.cwd(), 'src/pages/chapter/[slug].astro'),
+  'utf8',
+);
+const highFidelityLabs = [
+  'ModePermissionLab.astro',
+  'InterfaceMapLab.astro',
+  'FirstTaskLab.astro',
+  'ArtifactAcceptanceLab.astro',
+].map((fileName) => ({
+  fileName,
+  source: readFileSync(
+    resolve(process.cwd(), 'src/components/workbuddy', fileName),
+    'utf8',
+  ),
+}));
 
 function readScalar(frontmatter: string, key: string) {
   const match = frontmatter.match(new RegExp(`^${key}:\\s*["']?([^"'\\n]+)["']?\\s*$`, 'm'));
@@ -61,6 +78,23 @@ describe('章节内容结构', () => {
         chapter.source.split(componentTag).length - 1,
         `${chapter.fileName} 应恰好包含一次 ${componentTag}`,
       ).toBe(1);
+    }
+  });
+
+  it('来源只保留为内部元数据，不在首页和章节页公开展示', () => {
+    expect(homePageSource).not.toContain('教程不是照搬一篇文章');
+    expect(homePageSource).not.toContain('source-note');
+    expect(chapterPageSource).not.toContain('本单元来源');
+    expect(chapterPageSource).not.toContain('lesson-sources');
+  });
+
+  it('关键练习都复用当前版本的高保真 WorkBuddy 外壳', () => {
+    for (const lab of highFidelityLabs) {
+      expect(lab.source, lab.fileName).toContain(
+        "import WorkBuddyShell from './WorkBuddyShell.astro';",
+      );
+      expect(lab.source, lab.fileName).toContain('<WorkBuddyShell');
+      expect(lab.source, lab.fileName).not.toContain('教学用简化界面');
     }
   });
 });
