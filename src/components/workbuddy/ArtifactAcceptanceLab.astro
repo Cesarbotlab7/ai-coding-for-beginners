@@ -1,0 +1,107 @@
+<section class="wb-lab" data-acceptance-lab>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 08</span>
+    <h2 class="wb-lab__title">找出这份“已完成”产物的问题</h2>
+    <p class="wb-lab__description">AI 说完成，只代表它停止执行，不代表产物合格。</p>
+  </header>
+
+  <div class="acceptance-layout">
+    <article class="wb-card flawed-artifact">
+      <span class="wb-label">AI 交付</span>
+      <h3 class="wb-mono">meeting-summary.txt</h3>
+      <p><strong>结论：</strong>新版帮助中心下周上线。</p>
+      <p><strong>待办：</strong>尽快完成校对。</p>
+      <p><strong>保存位置：</strong>未说明。</p>
+    </article>
+
+    <fieldset class="review-list">
+      <legend>你发现了哪些问题？</legend>
+      <label><input type="checkbox" value="format" /> 文件格式不是要求的 Markdown</label>
+      <label><input type="checkbox" value="date" /> “下周”不是原记录里的“周五”</label>
+      <label><input type="checkbox" value="owner" /> 待办缺少负责人和截止时间</label>
+      <label><input type="checkbox" value="path" /> 没有说明保存位置</label>
+    </fieldset>
+  </div>
+
+  <p class="wb-status" aria-live="polite" data-review-status>已发现 0 / 4 个问题。</p>
+  <div class="repair-prompt" hidden data-repair>
+    <h3>可以这样要求它修正</h3>
+    <pre><code>请根据原始会议记录重新检查产物：
+1. 保存为 meeting-summary.md
+2. 不要把“周五”改写成“下周”
+3. 每个行动项标明负责人和截止时间
+4. 回复最终保存路径
+修正后逐项自检，并把核对结果列出来。</code></pre>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-acceptance-lab]').forEach((root) => {
+    const checks = [...root.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+    const status = root.querySelector<HTMLElement>('[data-review-status]');
+    const repair = root.querySelector<HTMLElement>('[data-repair]');
+    const render = () => {
+      if (!status || !repair) return;
+      const completed = checks.filter((check) => check.checked).length;
+      status.textContent = completed === checks.length
+        ? '验收完成：你找出了全部问题。'
+        : `已发现 ${completed} / ${checks.length} 个问题。`;
+      status.className = `wb-status ${completed === checks.length ? 'success' : ''}`;
+      repair.hidden = completed !== checks.length;
+    };
+    checks.forEach((check) => check.addEventListener('change', render));
+    render();
+  });
+</script>
+
+<style>
+  .acceptance-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .flawed-artifact h3 {
+    margin: var(--space-4) 0;
+  }
+
+  .review-list {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .review-list legend {
+    padding: 0 var(--space-2);
+    font-weight: var(--font-medium);
+  }
+
+  .review-list label {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .review-list input {
+    inline-size: var(--space-5);
+    block-size: var(--space-5);
+    flex: 0 0 auto;
+  }
+
+  .repair-prompt {
+    margin-top: var(--space-5);
+  }
+
+  .repair-prompt h3 {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-base);
+  }
+
+  @media (max-width: 40rem) {
+    .acceptance-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

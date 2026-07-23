@@ -1,0 +1,190 @@
+<section class="wb-lab" data-first-task-lab>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 06</span>
+    <h2 class="wb-lab__title">完整走一遍第一次任务</h2>
+    <p class="wb-lab__description">练习数据是虚构的。你只是在网页里模拟，不会读写电脑文件。</p>
+  </header>
+
+  <div class="task-workbench">
+    <section class="wb-card">
+      <span class="wb-label">任务设置</span>
+      <dl>
+        <div><dt>工作区</dt><dd data-workspace>未选择</dd></div>
+        <div><dt>素材</dt><dd data-input>未添加</dd></div>
+        <div><dt>模式</dt><dd data-mode>未选择</dd></div>
+        <div><dt>权限</dt><dd>默认权限</dd></div>
+      </dl>
+    </section>
+
+    <section class="wb-card execution-panel">
+      <span class="wb-label">执行过程</span>
+      <h3 data-step-title>第 1 步：选择工作区</h3>
+      <p data-step-copy>选择独立的“WorkBuddy练习/第一次任务”。</p>
+      <div class="plan-preview" hidden data-plan>
+        <ol>
+          <li>读取 meeting-notes.txt</li>
+          <li>只提取明确出现的结论与待办</li>
+          <li>生成 Markdown 纪要</li>
+          <li>保存为 meeting-summary.md</li>
+        </ol>
+      </div>
+      <button type="button" class="primary" data-next-step>完成这一步</button>
+    </section>
+
+    <section class="wb-card result-panel">
+      <span class="wb-label">结果与产物</span>
+      <p data-result-empty>任务还没有执行。</p>
+      <div hidden data-artifact>
+        <h3 class="wb-mono">meeting-summary.md</h3>
+        <p><strong>关键结论：</strong>新版帮助中心周五上线。</p>
+        <p><strong>行动项：</strong>小林周四前完成首轮校对。</p>
+        <p class="wb-status success">产物已生成。下一步不是庆祝，而是验收。</p>
+      </div>
+    </section>
+  </div>
+
+  <p class="wb-status" aria-live="polite" data-task-status>进度 0 / 6：先建立安全工作区。</p>
+</section>
+
+<script>
+  const taskSteps = [
+    {
+      title: '第 1 步：选择工作区',
+      copy: '选择独立的“WorkBuddy练习/第一次任务”。',
+      status: '进度 0 / 6：先建立安全工作区。',
+    },
+    {
+      title: '第 2 步：添加样例素材',
+      copy: '把虚构的 meeting-notes.txt 加入任务。',
+      status: '进度 1 / 6：工作区已经隔离。',
+      workspace: 'WorkBuddy练习/第一次任务',
+    },
+    {
+      title: '第 3 步：选择 Plan',
+      copy: '这是多步骤文件任务，先看计划再执行。',
+      status: '进度 2 / 6：样例素材已添加。',
+      input: 'meeting-notes.txt',
+    },
+    {
+      title: '第 4 步：审查计划',
+      copy: '检查输入文件、处理范围、输出格式和保存位置。',
+      status: '进度 3 / 6：Plan + 默认权限。',
+      mode: 'Plan',
+      showPlan: true,
+    },
+    {
+      title: '第 5 步：确认并执行',
+      copy: '计划没有越界，可以开始模拟执行。',
+      status: '进度 4 / 6：计划已经人工审查。',
+      showPlan: true,
+    },
+    {
+      title: '第 6 步：打开产物',
+      copy: '找到 meeting-summary.md，打开后进入人工验收。',
+      status: '进度 5 / 6：任务执行完成，等待打开产物。',
+      showArtifact: true,
+    },
+    {
+      title: '第一次任务已跑通',
+      copy: '你完成了工作区、素材、Plan、确认、执行和查看产物的完整闭环。',
+      status: '进度 6 / 6：第一单完成，现在进入验收。',
+      showArtifact: true,
+      done: true,
+    },
+  ];
+
+  document.querySelectorAll<HTMLElement>('[data-first-task-lab]').forEach((root) => {
+    let step = 0;
+    const title = root.querySelector<HTMLElement>('[data-step-title]');
+    const copy = root.querySelector<HTMLElement>('[data-step-copy]');
+    const status = root.querySelector<HTMLElement>('[data-task-status]');
+    const button = root.querySelector<HTMLButtonElement>('[data-next-step]');
+    const workspace = root.querySelector<HTMLElement>('[data-workspace]');
+    const input = root.querySelector<HTMLElement>('[data-input]');
+    const mode = root.querySelector<HTMLElement>('[data-mode]');
+    const plan = root.querySelector<HTMLElement>('[data-plan]');
+    const artifact = root.querySelector<HTMLElement>('[data-artifact]');
+    const resultEmpty = root.querySelector<HTMLElement>('[data-result-empty]');
+    if (!title || !copy || !status || !button || !workspace || !input || !mode || !plan || !artifact || !resultEmpty) return;
+
+    const render = () => {
+      const current = taskSteps[step];
+      title.textContent = current.title;
+      copy.textContent = current.copy;
+      status.textContent = current.status;
+      workspace.textContent = current.workspace ?? workspace.textContent;
+      input.textContent = current.input ?? input.textContent;
+      mode.textContent = current.mode ?? mode.textContent;
+      plan.hidden = !current.showPlan;
+      artifact.hidden = !current.showArtifact;
+      resultEmpty.hidden = Boolean(current.showArtifact);
+      button.disabled = Boolean(current.done);
+      button.textContent = current.done ? '第一单已完成' : step === 3 ? '确认计划' : '完成这一步';
+      status.className = `wb-status ${current.done ? 'success' : ''}`;
+    };
+
+    button.addEventListener('click', () => {
+      if (step < taskSteps.length - 1) step += 1;
+      render();
+    });
+    render();
+  });
+</script>
+
+<style>
+  .task-workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .task-workbench dl {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-4) 0 0;
+  }
+
+  .task-workbench dl div {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .task-workbench dt {
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+  }
+
+  .task-workbench dd {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+
+  .execution-panel h3,
+  .result-panel h3 {
+    margin: var(--space-4) 0 var(--space-2);
+    font-size: var(--text-base);
+  }
+
+  .execution-panel > p,
+  .result-panel p {
+    font-size: var(--text-sm);
+  }
+
+  .plan-preview {
+    margin-bottom: var(--space-4);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+  }
+
+  .plan-preview ol {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 40rem) {
+    .task-workbench {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

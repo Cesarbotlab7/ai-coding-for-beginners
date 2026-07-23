@@ -1,0 +1,146 @@
+<section class="wb-lab" data-install-lab>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 02</span>
+    <h2 class="wb-lab__title">选择你的电脑，再走安装清单</h2>
+    <p class="wb-lab__description">这里不替你下载安装，只告诉你每一步该看见什么。</p>
+  </header>
+
+  <fieldset class="platform-picker wb-field">
+    <legend>你正在使用</legend>
+    <div class="wb-choice-row">
+      <label class="platform-option">
+        <input type="radio" name="platform" value="windows" checked />
+        Windows
+      </label>
+      <label class="platform-option">
+        <input type="radio" name="platform" value="macos" />
+        macOS
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="wb-card platform-note" aria-live="polite">
+    <h3 data-platform-title>Windows 10 及以上</h3>
+    <p data-platform-copy>从官方页面下载 Windows x64 安装包，按安装向导完成安装。</p>
+  </div>
+
+  <ol class="install-steps">
+    <li>
+      <label><input type="checkbox" /> 从 <a href="https://www.codebuddy.cn/work/" target="_blank" rel="noreferrer">WorkBuddy 官方页面</a>进入下载</label>
+      <p>成功信号：页面明确显示与你系统匹配的安装包。</p>
+    </li>
+    <li>
+      <label><input type="checkbox" /> 运行安装包并完成安装向导</label>
+      <p>成功信号：桌面或应用列表中出现 WorkBuddy。</p>
+    </li>
+    <li>
+      <label><input type="checkbox" /> 阅读服务条款后，用微信扫码登录</label>
+      <p>成功信号：浏览器授权后自动返回客户端。</p>
+    </li>
+    <li>
+      <label><input type="checkbox" /> 打开头像菜单，执行“检查更新”</label>
+      <p>成功信号：显示已是最新版本，或完成升级。</p>
+    </li>
+    <li>
+      <label><input type="checkbox" /> 暂时不配置第三方 API Key</label>
+      <p>先用内置模型跑通第一单，减少变量。</p>
+    </li>
+  </ol>
+
+  <p class="wb-status" aria-live="polite" data-install-status>完成 0 / 5 步。</p>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-install-lab]').forEach((root, index) => {
+    const radios = [...root.querySelectorAll<HTMLInputElement>('input[name="platform"]')];
+    const checks = [...root.querySelectorAll<HTMLInputElement>('.install-steps input[type="checkbox"]')];
+    const title = root.querySelector<HTMLElement>('[data-platform-title]');
+    const copy = root.querySelector<HTMLElement>('[data-platform-copy]');
+    const status = root.querySelector<HTMLElement>('[data-install-status]');
+
+    radios.forEach((radio) => {
+      radio.name = `platform-${index}`;
+    });
+
+    const platformCopy = {
+      windows: {
+        title: 'Windows 10 及以上',
+        copy: '从官方页面下载 Windows x64 安装包，按安装向导完成安装。',
+      },
+      macos: {
+        title: 'macOS 12.0 及以上',
+        copy: '先确认是 Apple 芯片还是 Intel，再下载对应的 dmg 安装包。',
+      },
+    };
+
+    const renderPlatform = () => {
+      const platform = radios.find((radio) => radio.checked)?.value as keyof typeof platformCopy;
+      if (!platform || !title || !copy) return;
+      title.textContent = platformCopy[platform].title;
+      copy.textContent = platformCopy[platform].copy;
+    };
+
+    const renderProgress = () => {
+      if (!status) return;
+      const completed = checks.filter((check) => check.checked).length;
+      status.textContent = completed === checks.length
+        ? '安装清单完成。下一步先建立安全工作区。'
+        : `完成 ${completed} / ${checks.length} 步。`;
+      status.classList.toggle('success', completed === checks.length);
+    };
+
+    radios.forEach((radio) => radio.addEventListener('change', renderPlatform));
+    checks.forEach((check) => check.addEventListener('change', renderProgress));
+    renderPlatform();
+    renderProgress();
+  });
+</script>
+
+<style>
+  .platform-picker {
+    padding: 0;
+    border: 0;
+  }
+
+  .platform-option {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-height);
+    padding: var(--space-2) var(--space-4);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+
+  .install-steps {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .install-steps li {
+    padding: var(--space-3);
+    border-bottom: var(--border-hairline) solid var(--color-border);
+  }
+
+  .install-steps label {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .install-steps input {
+    inline-size: var(--space-5);
+    block-size: var(--space-5);
+    flex: 0 0 auto;
+  }
+
+  .install-steps p {
+    margin: var(--space-1) 0 0 var(--space-6);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+</style>

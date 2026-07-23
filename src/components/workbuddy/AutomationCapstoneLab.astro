@@ -1,0 +1,154 @@
+<section class="wb-lab" data-automation-lab>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 11</span>
+    <h2 class="wb-lab__title">毕业任务上线检查</h2>
+    <p class="wb-lab__description">目标：每天早上生成带来源链接的 AI 资讯早报，并推送到手机端。</p>
+  </header>
+
+  <div class="automation-flow">
+    <div class="wb-card">
+      <span class="wb-label">手动任务</span>
+      <h3>每日 AI 资讯早报</h3>
+      <p>检索最近 24 小时信息，保留 5 条，标明标题、摘要、时间和来源链接。</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
+    <div class="wb-card">
+      <span class="wb-label">手机助理</span>
+      <h3>远程查看</h3>
+      <p>电脑在线、WorkBuddy 运行时，手机端接收结果并查看任务记录。</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
+    <div class="wb-card">
+      <span class="wb-label">自动化</span>
+      <h3>每天定时执行</h3>
+      <p>只有手动结果稳定后，才把相同任务交给定时器。</p>
+    </div>
+  </div>
+
+  <fieldset class="launch-checklist">
+    <legend>上线前必须全部满足</legend>
+    <label><input type="checkbox" name="manualRunPassed" /> 已手动跑通一次</label>
+    <label><input type="checkbox" name="outputVerified" /> 已核对时间范围、条数、链接和格式</label>
+    <label><input type="checkbox" name="absolutePath" /> 输出目录使用绝对路径</label>
+    <label><input type="checkbox" name="computerAwake" /> 已关闭电脑自动休眠</label>
+    <label><input type="checkbox" name="clientRunning" /> WorkBuddy 会保持运行</label>
+  </fieldset>
+
+  <button type="button" class="primary" data-launch-check>检查是否可以开启自动化</button>
+  <div class="wb-status" aria-live="polite" data-launch-status>还没有检查。</div>
+
+  <details class="history-lab">
+    <summary>第二天没有收到早报，先查什么？</summary>
+    <ol>
+      <li>打开自动化历史，看任务是否触发。</li>
+      <li>没触发：检查电脑休眠和客户端运行状态。</li>
+      <li>触发但失败：检查工作区、绝对路径、登录和网络。</li>
+      <li>执行成功但内容不对：回到手动任务修改要求，再重新验收。</li>
+    </ol>
+  </details>
+</section>
+
+<script>
+  import { assessAutomationReadiness } from '../../lib/workbuddy-labs';
+
+  document.querySelectorAll<HTMLElement>('[data-automation-lab]').forEach((root) => {
+    const checks = [...root.querySelectorAll<HTMLInputElement>('.launch-checklist input')];
+    const button = root.querySelector<HTMLButtonElement>('[data-launch-check]');
+    const status = root.querySelector<HTMLElement>('[data-launch-status]');
+    if (!button || !status) return;
+
+    button.addEventListener('click', () => {
+      const values = Object.fromEntries(checks.map((check) => [check.name, check.checked])) as {
+        manualRunPassed: boolean;
+        outputVerified: boolean;
+        absolutePath: boolean;
+        computerAwake: boolean;
+        clientRunning: boolean;
+      };
+      const result = assessAutomationReadiness(values);
+      status.textContent = result.ready
+        ? '可以开启自动化。明天仍要检查第一次真实执行记录。'
+        : `暂时不能开启：${result.issues.join('；')}。`;
+      status.className = `wb-status ${result.ready ? 'success' : 'warning'}`;
+    });
+  });
+</script>
+
+<style>
+  .automation-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .automation-flow h3 {
+    margin: var(--space-3) 0 var(--space-2);
+    font-size: var(--text-base);
+  }
+
+  .automation-flow p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  .flow-arrow {
+    color: var(--color-text-info);
+    font-size: var(--text-xl);
+  }
+
+  .launch-checklist {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-5) 0;
+    padding: var(--space-4);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .launch-checklist legend {
+    padding: 0 var(--space-2);
+    font-weight: var(--font-medium);
+  }
+
+  .launch-checklist label {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .launch-checklist input {
+    inline-size: var(--space-5);
+    block-size: var(--space-5);
+    flex: 0 0 auto;
+  }
+
+  .history-lab {
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .history-lab summary {
+    cursor: pointer;
+    font-weight: var(--font-medium);
+  }
+
+  .history-lab ol {
+    margin: var(--space-3) 0 0;
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 40rem) {
+    .automation-flow {
+      grid-template-columns: 1fr;
+    }
+
+    .flow-arrow {
+      transform: rotate(90deg);
+      text-align: center;
+    }
+  }
+</style>

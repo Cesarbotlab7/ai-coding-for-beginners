@@ -1,0 +1,54 @@
+---
+slug: "prompt-builder"
+title: "别只说“帮我做一下”"
+stage: 2
+order: 6
+summary: "用目标、素材、步骤、输出和验收标准，把模糊要求改成可执行任务。"
+updated: 2026-07-23
+verified: 2026-07-23
+verified_version: "WorkBuddy 5.2.x"
+estimated_reading_minutes: 10
+lesson_goal: "能写出一条 WorkBuddy 不必大量猜测、结果也容易检查的任务指令。"
+core_component: "PromptBuilderLab"
+sources:
+  - label: "WorkBuddy 官方创建任务"
+    url: "https://www.codebuddy.cn/docs/workbuddy/Create-Task"
+  - label: "程序员小灰 WorkBuddy 教程上篇"
+    url: "https://x.com/XiaohuiAI666/status/2071830585216291050"
+takeaways:
+  - "好指令不靠长，而靠目标、素材、步骤、输出和验收五项齐全。"
+  - "文件名和保存位置要具体，重要事实要限制来源。"
+  - "验收标准决定你最后如何判断合不合格。"
+---
+
+“帮我写一份周报”不是错，但它把所有决定都留给了模型：写谁的、根据什么、分几部分、保存成什么、怎样才算合格。
+
+补齐五项，任务会稳定很多。
+
+<PromptBuilderLab />
+
+## 五项分别解决什么
+
+### 目标
+
+说清楚最后要完成哪件事。一次只放一个主目标。
+
+### 素材
+
+告诉它使用哪些文件、链接或文本。重要任务最好加一句“只使用提供的资料”。
+
+### 步骤
+
+写关键动作和禁止事项，不需要把它写成几十页需求文档。
+
+### 输出
+
+明确文件类型、文件名、保存位置和必要结构。
+
+### 验收
+
+把你最后会检查的项目提前告诉它，例如数量、栏目、页码、时间范围和来源链接。
+
+## 判断是否写得太多
+
+删掉一句话后，如果 WorkBuddy 仍能做出同样的决定，这句话可能不需要。删掉后它必须猜，这句话就应该保留。

@@ -1,93 +1,103 @@
 ---
 import { getCollection, render } from 'astro:content';
+import ChapterCloser from '../../components/ChapterCloser.astro';
+import AgentVsChatLab from '../../components/workbuddy/AgentVsChatLab.astro';
+import ArtifactAcceptanceLab from '../../components/workbuddy/ArtifactAcceptanceLab.astro';
+import AutomationCapstoneLab from '../../components/workbuddy/AutomationCapstoneLab.astro';
+import CapabilityMatcherLab from '../../components/workbuddy/CapabilityMatcherLab.astro';
+import FirstTaskLab from '../../components/workbuddy/FirstTaskLab.astro';
+import InstallWizardLab from '../../components/workbuddy/InstallWizardLab.astro';
+import InterfaceMapLab from '../../components/workbuddy/InterfaceMapLab.astro';
+import MemoryReviewLab from '../../components/workbuddy/MemoryReviewLab.astro';
+import ModePermissionLab from '../../components/workbuddy/ModePermissionLab.astro';
+import PromptBuilderLab from '../../components/workbuddy/PromptBuilderLab.astro';
+import WorkspaceSafetyLab from '../../components/workbuddy/WorkspaceSafetyLab.astro';
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import ImaginationVsReality from '../../components/ImaginationVsReality.astro';
-import FileExplorer from '../../components/FileExplorer.astro';
-import Chapter0Closer from '../../components/chapters/Chapter0Closer.astro';
-import Chapter1Closer from '../../components/chapters/Chapter1Closer.astro';
-import Chapter2Closer from '../../components/chapters/Chapter2Closer.astro';
-import Chapter3Closer from '../../components/chapters/Chapter3Closer.astro';
-import Chapter4Closer from '../../components/chapters/Chapter4Closer.astro';
-import Chapter5Closer from '../../components/chapters/Chapter5Closer.astro';
-import Chapter6Closer from '../../components/chapters/Chapter6Closer.astro';
-import Chapter7Closer from '../../components/chapters/Chapter7Closer.astro';
-import Chapter8Closer from '../../components/chapters/Chapter8Closer.astro';
-import Chapter9Closer from '../../components/chapters/Chapter9Closer.astro';
-import ChapterInstallCloser from '../../components/chapters/ChapterInstallCloser.astro';
-import InstallGuide from '../../components/InstallGuide.astro';
-import RequestFlow from '../../components/RequestFlow.astro';
-import RestaurantMap from '../../components/RestaurantMap.astro';
-import TaskDrag from '../../components/TaskDrag.astro';
-import TimeMachine from '../../components/TimeMachine.astro';
-import LoginDemo from '../../components/LoginDemo.astro';
-import DeploymentSelector from '../../components/DeploymentSelector.astro';
-import DNSAnimation from '../../components/DNSAnimation.astro';
-import ClaudeComparison from '../../components/ClaudeComparison.astro';
-import StepChecklist from '../../components/StepChecklist.astro';
-import MonitorDashboard from '../../components/MonitorDashboard.astro';
 
 export async function getStaticPaths() {
-  const allChapters = await getCollection('chapters');
-  const sorted = allChapters.sort((a, b) => {
-    if (a.data.stage !== b.data.stage) return a.data.stage - b.data.stage;
-    return a.data.order - b.data.order;
-  });
+  const chapters = await getCollection('chapters');
+  const sorted = chapters.sort((a, b) => a.data.order - b.data.order);
 
-  return sorted.map((chapter, idx) => ({
+  return sorted.map((chapter, index) => ({
     params: { slug: chapter.data.slug },
     props: {
       chapter,
-      prevChapter: idx > 0 ? sorted[idx - 1] : null,
-      nextChapter: idx < sorted.length - 1 ? sorted[idx + 1] : null,
+      previous: index > 0 ? sorted[index - 1] : null,
+      next: index < sorted.length - 1 ? sorted[index + 1] : null,
     },
   }));
 }
 
-const { chapter, prevChapter, nextChapter } = Astro.props;
+const { chapter, previous, next } = Astro.props;
 const { Content } = await render(chapter);
-
-// 每章对应的 ChapterCloser 变体，后续章节在此处扩展
-const chapterCloserMap: Record<string, any> = {
-  'chapter-0': Chapter0Closer,
-  'chapter-1': Chapter1Closer,
-  'chapter-2': Chapter2Closer,
-  'chapter-3': Chapter3Closer,
-  'chapter-4': Chapter4Closer,
-  'chapter-5': Chapter5Closer,
-  'chapter-6': Chapter6Closer,
-  'chapter-7': Chapter7Closer,
-  'chapter-8': Chapter8Closer,
-  'chapter-9': Chapter9Closer,
-  'install-claude-code': ChapterInstallCloser,
-};
-const ChapterCloser = chapterCloserMap[chapter.data.slug] ?? null;
+const previousLink = previous
+  ? { slug: previous.data.slug, title: previous.data.title }
+  : undefined;
+const nextLink = next
+  ? { slug: next.data.slug, order: next.data.order, title: next.data.title }
+  : undefined;
 ---
 <ChapterLayout
   title={chapter.data.title}
   summary={chapter.data.summary}
+  lessonGoal={chapter.data.lesson_goal}
   stage={chapter.data.stage}
   order={chapter.data.order}
   updated={chapter.data.updated}
+  verified={chapter.data.verified}
+  verifiedVersion={chapter.data.verified_version}
   estimatedReadingMinutes={chapter.data.estimated_reading_minutes}
-  prevChapter={prevChapter ? { slug: prevChapter.data.slug, title: prevChapter.data.title } : undefined}
-  nextChapter={nextChapter ? { slug: nextChapter.data.slug, title: nextChapter.data.title } : undefined}
+  prevChapter={previousLink}
+  nextChapter={nextLink}
 >
   <Content
     components={{
-      ImaginationVsReality,
-      FileExplorer,
-      RequestFlow,
-      RestaurantMap,
-      TaskDrag,
-      TimeMachine,
-      LoginDemo,
-      DeploymentSelector,
-      DNSAnimation,
-      ClaudeComparison,
-      StepChecklist,
-      MonitorDashboard,
-      InstallGuide,
-      ChapterCloser,
+      AgentVsChatLab,
+      InstallWizardLab,
+      WorkspaceSafetyLab,
+      ModePermissionLab,
+      InterfaceMapLab,
+      FirstTaskLab,
+      PromptBuilderLab,
+      ArtifactAcceptanceLab,
+      MemoryReviewLab,
+      CapabilityMatcherLab,
+      AutomationCapstoneLab,
     }}
   />
+
+  <section class="lesson-sources">
+    <h2>本单元来源</h2>
+    <ul>
+      {chapter.data.sources.map((source) => (
+        <li><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>
+      ))}
+    </ul>
+  </section>
+
+  <ChapterCloser
+    slug={chapter.data.slug}
+    takeaways={chapter.data.takeaways}
+    next={nextLink}
+  />
 </ChapterLayout>
+
+<style>
+  .lesson-sources {
+    margin-top: var(--space-7);
+    padding: var(--space-4);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-secondary);
+  }
+
+  .lesson-sources h2 {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-base);
+  }
+
+  .lesson-sources ul {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+</style>

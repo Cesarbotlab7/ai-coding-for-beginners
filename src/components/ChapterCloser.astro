@@ -1,168 +1,150 @@
 ---
-export interface Props {
+interface Props {
+  slug: string;
   takeaways: string[];
-  quote: { text: string; attribution: string };
   next?: {
-    chapterNumber: number;
+    slug: string;
+    order: number;
     title: string;
-    description: string;
   };
 }
 
-const { takeaways, quote, next } = Astro.props;
+const { slug, takeaways, next } = Astro.props;
 ---
-<section class="closer-root">
+<section class="closer" data-lesson-closer data-slug={slug}>
   <div class="takeaways">
-    <h2 class="takeaways-title">
-      其实你已经学到了
-      <span class="count">{takeaways.length} 件事</span>
-    </h2>
-    <ul class="takeaway-list" role="list">
-      {takeaways.map((item) => (
-        <li class="takeaway-item">
-          <span class="check-icon" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" fill="var(--color-bg-success)"/>
-              <path d="M8 12l3 3 5-5" stroke="var(--color-text-success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            </svg>
-          </span>
-          <span>{item}</span>
-        </li>
-      ))}
+    <h2>这一单元，你已经会了</h2>
+    <ul>
+      {takeaways.map((takeaway) => <li>{takeaway}</li>)}
     </ul>
   </div>
 
-  <blockquote class="pull-quote">
-    <p>{quote.text}</p>
-    <footer>— {quote.attribution}</footer>
-  </blockquote>
+  <div class="completion">
+    <div>
+      <p class="completion-label">学习进度只保存在这台设备的浏览器里</p>
+      <p class="completion-status" aria-live="polite">完成互动后，可以标记这一单元。</p>
+    </div>
+    <button type="button" class="primary" data-complete-button>标记本单元已完成</button>
+  </div>
 
   {next && (
-    <div class="next-chapter">
-      <p class="next-label">下一章</p>
-      <h3 class="next-title">第 {next.chapterNumber} 章：{next.title}</h3>
-      <p class="next-desc">{next.description}</p>
-      <a href={`/chapter/chapter-${next.chapterNumber}`} class="next-btn">
-        开始第 {next.chapterNumber} 章 →
-      </a>
-    </div>
+    <a class="next-card" href={`/chapter/${next.slug}`}>
+      <span>下一单元 · {next.order}</span>
+      <strong>{next.title}</strong>
+    </a>
   )}
 </section>
 
+<script>
+  const STORAGE_KEY = 'workbuddy-course-progress-v1';
+
+  document.querySelectorAll<HTMLElement>('[data-lesson-closer]').forEach((root) => {
+    const slug = root.dataset.slug;
+    const button = root.querySelector<HTMLButtonElement>('[data-complete-button]');
+    const status = root.querySelector<HTMLElement>('.completion-status');
+    if (!slug || !button || !status) return;
+
+    const readProgress = (): string[] => {
+      try {
+        const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+        return Array.isArray(value) ? value.filter((item) => typeof item === 'string') : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const render = () => {
+      const completed = readProgress().includes(slug);
+      button.textContent = completed ? '已完成，点击可撤销' : '标记本单元已完成';
+      button.classList.toggle('primary', !completed);
+      status.textContent = completed
+        ? '这一单元已记录为完成。'
+        : '完成互动后，可以标记这一单元。';
+    };
+
+    button.addEventListener('click', () => {
+      const progress = new Set(readProgress());
+      if (progress.has(slug)) progress.delete(slug);
+      else progress.add(slug);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...progress]));
+      render();
+    });
+
+    render();
+  });
+</script>
+
 <style>
-  .closer-root {
-    margin-top: var(--space-7);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
+  .closer {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-8);
   }
 
   .takeaways {
+    padding: var(--space-5);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-lg);
     background: var(--color-bg-primary);
-    border: 0.5px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-5);
   }
 
-  .takeaways-title {
-    font-size: var(--text-md);
-    font-weight: var(--font-medium);
-    color: var(--color-text-primary);
+  .takeaways h2 {
     margin: 0 0 var(--space-4);
-  }
-
-  .count {
-    color: var(--color-text-info);
-  }
-
-  .takeaway-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .takeaway-item {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-    font-size: var(--text-base);
-    line-height: 1.6;
-    color: var(--color-text-primary);
-  }
-
-  .check-icon {
-    flex-shrink: 0;
-    margin-top: 3px;
-  }
-
-  .pull-quote {
-    border-left: 2px solid var(--color-border-secondary);
-    padding: var(--space-4) var(--space-5);
-    margin: 0;
-  }
-
-  .pull-quote p {
-    font-family: var(--font-serif);
     font-size: var(--text-md);
-    line-height: 1.8;
-    color: var(--color-text-secondary);
-    margin: 0 0 var(--space-2);
   }
 
-  .pull-quote footer {
-    font-size: var(--text-sm);
-    color: var(--color-text-tertiary);
+  .takeaways ul {
+    margin: 0;
   }
 
-  .next-chapter {
-    background: var(--color-bg-info);
+  .completion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4);
     border-radius: var(--radius-lg);
-    padding: var(--space-5);
+    background: var(--color-bg-secondary);
+  }
+
+  .completion p {
+    margin: 0;
+  }
+
+  .completion-label,
+  .completion-status {
+    font-size: var(--text-sm);
+  }
+
+  .completion-status {
+    color: var(--color-text-secondary);
+  }
+
+  .next-card {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-1);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-info);
+    color: var(--color-text-primary);
+    text-decoration: none;
   }
 
-  .next-label {
-    font-size: var(--text-xs);
-    font-weight: var(--font-medium);
+  .next-card span {
     color: var(--color-text-info);
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: var(--text-xs);
   }
 
-  .next-title {
+  .next-card strong {
     font-size: var(--text-md);
     font-weight: var(--font-medium);
-    color: var(--color-text-primary);
-    margin: 0;
   }
 
-  .next-desc {
-    font-size: var(--text-sm);
-    color: var(--color-text-secondary);
-    line-height: 1.65;
-    margin: 0;
-  }
-
-  .next-btn {
-    display: inline-block;
-    padding: var(--space-2) var(--space-4);
-    background: var(--color-text-primary);
-    color: var(--color-bg);
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    align-self: flex-start;
-    transition: opacity 0.12s;
-  }
-
-  .next-btn:hover {
-    opacity: 0.85;
+  @media (max-width: 40rem) {
+    .completion {
+      align-items: stretch;
+      flex-direction: column;
+    }
   }
 </style>

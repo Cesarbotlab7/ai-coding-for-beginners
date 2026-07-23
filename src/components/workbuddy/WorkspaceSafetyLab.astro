@@ -1,0 +1,125 @@
+<section class="wb-lab" data-workspace-lab>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 03</span>
+    <h2 class="wb-lab__title">替第一次练习选一个工作区</h2>
+    <p class="wb-lab__description">工作区像一张专用工作台：只把这次要处理的副本放上去。</p>
+  </header>
+
+  <fieldset class="workspace-options">
+    <legend class="sr-only">选择工作区</legend>
+    <label class="wb-card">
+      <input type="radio" name="workspace" value="system" />
+      <strong>系统目录</strong>
+      <span class="wb-mono">C:\Windows 或 /System</span>
+    </label>
+    <label class="wb-card">
+      <input type="radio" name="workspace" value="originals" />
+      <strong>原始重要资料目录</strong>
+      <span class="wb-mono">年度合同与财务原件</span>
+    </label>
+    <label class="wb-card">
+      <input type="radio" name="workspace" value="practice" />
+      <strong>独立练习目录</strong>
+      <span class="wb-mono">WorkBuddy练习/第一次任务</span>
+    </label>
+  </fieldset>
+
+  <p class="wb-status" aria-live="polite" data-workspace-status>先选择一个目录。</p>
+
+  <div class="safety-confirmation" hidden data-safety-confirmation>
+    <h3>再确认三件事</h3>
+    <ul class="wb-checklist">
+      <li class="wb-check"><label><input type="checkbox" />目录中只放练习副本，不放唯一原件</label></li>
+      <li class="wb-check"><label><input type="checkbox" />原始资料保留在其他位置</label></li>
+      <li class="wb-check"><label><input type="checkbox" />知道 WorkBuddy 会把产物保存在哪里</label></li>
+    </ul>
+    <p class="wb-status" aria-live="polite" data-safety-status>完成 0 / 3 项安全确认。</p>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-workspace-lab]').forEach((root, index) => {
+    const options = [...root.querySelectorAll<HTMLInputElement>('input[name="workspace"]')];
+    const confirmation = root.querySelector<HTMLElement>('[data-safety-confirmation]');
+    const workspaceStatus = root.querySelector<HTMLElement>('[data-workspace-status]');
+    const safetyStatus = root.querySelector<HTMLElement>('[data-safety-status]');
+    const checks = [...root.querySelectorAll<HTMLInputElement>('.safety-confirmation input[type="checkbox"]')];
+
+    options.forEach((option) => {
+      option.name = `workspace-${index}`;
+      option.addEventListener('change', () => {
+        if (!workspaceStatus || !confirmation) return;
+        confirmation.hidden = option.value !== 'practice';
+        workspaceStatus.className = 'wb-status';
+        if (option.value === 'system') {
+          workspaceStatus.textContent = '不合适：系统目录受保护，误操作后果也更严重。';
+          workspaceStatus.classList.add('danger');
+        } else if (option.value === 'originals') {
+          workspaceStatus.textContent = '不合适：第一次练习不要直接处理唯一原件。';
+          workspaceStatus.classList.add('warning');
+        } else {
+          workspaceStatus.textContent = '推荐：独立目录让文件范围清楚，也便于删除整套练习。';
+          workspaceStatus.classList.add('success');
+        }
+      });
+    });
+
+    const renderChecks = () => {
+      if (!safetyStatus) return;
+      const completed = checks.filter((check) => check.checked).length;
+      safetyStatus.textContent = completed === checks.length
+        ? '安全工作区准备完成。'
+        : `完成 ${completed} / ${checks.length} 项安全确认。`;
+      safetyStatus.classList.toggle('success', completed === checks.length);
+    };
+
+    checks.forEach((check) => check.addEventListener('change', renderChecks));
+    renderChecks();
+  });
+</script>
+
+<style>
+  .workspace-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    padding: 0;
+    border: 0;
+  }
+
+  .workspace-options label {
+    display: grid;
+    gap: var(--space-2);
+    cursor: pointer;
+  }
+
+  .workspace-options input {
+    inline-size: var(--space-5);
+    block-size: var(--space-5);
+  }
+
+  .workspace-options span {
+    color: var(--color-text-secondary);
+  }
+
+  .safety-confirmation {
+    margin-top: var(--space-5);
+  }
+
+  .safety-confirmation h3 {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-base);
+  }
+
+  .wb-check label {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  @media (max-width: 40rem) {
+    .workspace-options {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

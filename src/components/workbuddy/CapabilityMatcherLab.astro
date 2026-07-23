@@ -1,0 +1,102 @@
+---
+const scenarios = [
+  {
+    id: 'xlsx',
+    title: '每周都要按同一规则合并 Excel 并生成图表',
+    correct: 'skill',
+    explanation: '重复、稳定、步骤明确，优先用 Skill 固化操作方法。',
+  },
+  {
+    id: 'legal',
+    title: '需要按法务框架识别一份常见合同里的风险类型',
+    correct: 'expert',
+    explanation: '需要领域判断和输出标准，选择专家；最终仍由专业人士复核。',
+  },
+  {
+    id: 'campaign',
+    title: '从市场研究到文案、设计、审校，多个角色协作交付活动方案',
+    correct: 'team',
+    explanation: '任务横跨多个专业角色，适合专家团和明确的协作顺序。',
+  },
+];
+---
+<section class="wb-lab" data-capability-lab data-scenarios={JSON.stringify(scenarios)}>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 10</span>
+    <h2 class="wb-lab__title">Skill、专家、专家团配对</h2>
+    <p class="wb-lab__description">记住一句话：Skill 是方法，专家是判断，专家团是分工。</p>
+  </header>
+
+  <div class="capability-list">
+    {scenarios.map((scenario) => (
+      <article class="wb-card" data-scenario-id={scenario.id}>
+        <h3>{scenario.title}</h3>
+        <label class="wb-field">
+          <span>最合适的是</span>
+          <select>
+            <option value="">请选择</option>
+            <option value="skill">Skill</option>
+            <option value="expert">专家</option>
+            <option value="team">专家团</option>
+          </select>
+        </label>
+        <p class="scenario-feedback" aria-live="polite"></p>
+      </article>
+    ))}
+  </div>
+
+  <button type="button" class="primary" data-check-capability>检查配对</button>
+  <p class="wb-status" aria-live="polite" data-capability-status>还没有检查。</p>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-capability-lab]').forEach((root) => {
+    const scenarios = JSON.parse(root.dataset.scenarios ?? '[]') as Array<{
+      id: string;
+      correct: string;
+      explanation: string;
+    }>;
+    const button = root.querySelector<HTMLButtonElement>('[data-check-capability]');
+    const status = root.querySelector<HTMLElement>('[data-capability-status]');
+    if (!button || !status) return;
+
+    button.addEventListener('click', () => {
+      let correctCount = 0;
+      scenarios.forEach((scenario) => {
+        const card = root.querySelector<HTMLElement>(`[data-scenario-id="${scenario.id}"]`);
+        const select = card?.querySelector<HTMLSelectElement>('select');
+        const feedback = card?.querySelector<HTMLElement>('.scenario-feedback');
+        if (!card || !select || !feedback) return;
+        const correct = select.value === scenario.correct;
+        if (correct) correctCount += 1;
+        card.classList.toggle('selected', correct);
+        feedback.textContent = `${correct ? '配对正确。' : '配对不合适。'}${scenario.explanation}`;
+      });
+      status.textContent = correctCount === scenarios.length
+        ? '三种能力已经分清楚。'
+        : `答对 ${correctCount} / ${scenarios.length} 题。`;
+      status.className = `wb-status ${correctCount === scenarios.length ? 'success' : 'warning'}`;
+    });
+  });
+</script>
+
+<style>
+  .capability-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .scenario-feedback {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 40rem) {
+    .capability-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

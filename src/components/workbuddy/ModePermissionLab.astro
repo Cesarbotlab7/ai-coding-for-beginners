@@ -1,0 +1,112 @@
+<section class="wb-lab" data-mode-permission-lab>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 04</span>
+    <h2 class="wb-lab__title">先判断任务，再选两套开关</h2>
+    <p class="wb-lab__description">工作模式决定“怎么推进”，权限决定“能碰到哪里”。</p>
+  </header>
+
+  <label class="wb-field">
+    <span>选择一个任务</span>
+    <select data-scenario>
+      <option value="question">解释这份报告讲了什么，不修改文件</option>
+      <option value="multi">把五份表格合并、生成图表并保存</option>
+      <option value="simple">把一份文档另存为 Markdown</option>
+      <option value="risky">批量删除原始资料中的重复文件</option>
+    </select>
+  </label>
+
+  <div class="settings-grid">
+    <div class="wb-card">
+      <span class="wb-label">工作模式</span>
+      <h3 data-work-mode>Ask</h3>
+      <p>Ask / Plan / Craft 选择任务的推进方式。</p>
+    </div>
+    <div class="wb-card">
+      <span class="wb-label">权限模式</span>
+      <h3 data-permission-mode>默认权限</h3>
+      <p>教程始终保留安全确认，不自动推荐完全访问。</p>
+    </div>
+  </div>
+
+  <p class="wb-status success" aria-live="polite" data-recommendation>
+    先了解信息，不需要修改文件。
+  </p>
+
+  <details class="full-access-note">
+    <summary>那什么时候用“完全访问权限”？</summary>
+    <p>只有你理解风险、任务可恢复、文件已隔离，而且愿意减少确认步骤时，才短时间考虑。它不是“更聪明”，只是“少拦几次”。</p>
+  </details>
+</section>
+
+<script>
+  import { recommendTaskSetup } from '../../lib/workbuddy-labs';
+
+  const scenarios = {
+    question: { modifiesFiles: false, multiStep: false, highRisk: false, reversible: true },
+    multi: { modifiesFiles: true, multiStep: true, highRisk: false, reversible: true },
+    simple: { modifiesFiles: true, multiStep: false, highRisk: false, reversible: true },
+    risky: { modifiesFiles: true, multiStep: true, highRisk: true, reversible: false },
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-mode-permission-lab]').forEach((root) => {
+    const select = root.querySelector<HTMLSelectElement>('[data-scenario]');
+    const workMode = root.querySelector<HTMLElement>('[data-work-mode]');
+    const permission = root.querySelector<HTMLElement>('[data-permission-mode]');
+    const recommendation = root.querySelector<HTMLElement>('[data-recommendation]');
+    if (!select || !workMode || !permission || !recommendation) return;
+    const render = () => {
+      const profile = scenarios[select.value as keyof typeof scenarios];
+      const result = recommendTaskSetup(profile);
+      workMode.textContent = result.workMode;
+      permission.textContent = result.permissionMode;
+      recommendation.textContent = result.reason;
+      recommendation.className = `wb-status ${profile.highRisk ? 'warning' : 'success'}`;
+    };
+
+    select.addEventListener('change', render);
+    render();
+  });
+</script>
+
+<style>
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .settings-grid h3 {
+    margin: var(--space-3) 0 var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+  }
+
+  .settings-grid p {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  .full-access-note {
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .full-access-note summary {
+    cursor: pointer;
+    font-weight: var(--font-medium);
+  }
+
+  .full-access-note p {
+    margin: var(--space-3) 0 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 40rem) {
+    .settings-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

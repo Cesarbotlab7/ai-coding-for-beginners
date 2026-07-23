@@ -1,0 +1,64 @@
+---
+slug: "automation-capstone"
+title: "手机助理与自动化毕业任务"
+stage: 4
+order: 10
+summary: "先手动跑通每日 AI 资讯早报，再接手机查看、定时执行和历史排错。"
+updated: 2026-07-23
+verified: 2026-07-23
+verified_version: "WorkBuddy 5.2.x"
+estimated_reading_minutes: 14
+lesson_goal: "能判断一个任务是否已经适合自动化，并知道第二天从执行历史开始排错。"
+core_component: "AutomationCapstoneLab"
+sources:
+  - label: "WorkBuddy 官方助理说明"
+    url: "https://www.codebuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Assistant"
+  - label: "WorkBuddy 官方自动化说明"
+    url: "https://www.codebuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Automation-Guide"
+  - label: "程序员小灰 WorkBuddy 教程完结篇"
+    url: "https://x.com/XiaohuiAI666/status/2072156656323232245"
+takeaways:
+  - "自动化之前必须手动跑通并人工验收。"
+  - "本地自动化依赖电脑在线、客户端运行和清楚的工作区。"
+  - "第二天先查执行历史，再区分没触发、执行失败和内容不合格。"
+---
+
+自动化不是“把一句模糊要求定时发送”。
+
+它是把一个已经稳定的手动流程，交给时钟重复触发。
+
+毕业任务使用每日 AI 资讯早报，因为它能同时练习时间范围、来源链接、固定格式、手机查看和定时执行。
+
+<AutomationCapstoneLab />
+
+## 先跑手动版
+
+新建普通任务，使用下面的结构：
+
+```text
+目标：生成今天的 AI 资讯早报。
+时间范围：只收集最近 24 小时发布的信息。
+数量：保留最重要的 5 条。
+每条必须包含：标题、两句摘要、发布时间和原始来源链接。
+来源要求：优先官方公告和一手来源，不使用无法打开的聚合链接。
+输出：保存为绝对路径下的 ai-brief-YYYY-MM-DD.md。
+验收：逐条打开链接，确认标题、时间和摘要对应。
+```
+
+先看结果。连续几次都能通过验收，才进入自动化页面。
+
+## 手机助理负责什么
+
+助理像遥控器。你可以从手机发送任务或接收结果，但真正执行仍依赖电脑上的 WorkBuddy。电脑关机、网络断开或客户端没有运行时，远程任务不会凭空完成。
+
+## 第二天的验收
+
+不要只看手机有没有消息。打开自动化历史，确认：
+
+1. 是否在正确时间触发。
+2. 使用了哪个工作区和模型。
+3. 执行过程是否报错。
+4. 产物是否保存到预定位置。
+5. 五条来源是否仍能打开。
+
+走完这些检查，你才真正从“会用一个功能”走到了“能管理一条自动流程”。

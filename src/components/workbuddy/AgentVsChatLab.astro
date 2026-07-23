@@ -1,0 +1,91 @@
+<section class="wb-lab" data-agent-chat-lab>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 01</span>
+    <h2 class="wb-lab__title">同一句话，两种完全不同的结果</h2>
+    <p class="wb-lab__description">切换查看：一个给你建议，一个把任务推进到可验收的产物。</p>
+  </header>
+
+  <div class="wb-field">
+    <span>你的要求</span>
+    <div class="wb-card wb-mono">把这份会议记录整理成正式会议纪要。</div>
+  </div>
+
+  <div class="wb-choice-row" role="tablist" aria-label="结果类型">
+    <button type="button" role="tab" aria-selected="true" data-mode="chat">普通聊天</button>
+    <button type="button" role="tab" aria-selected="false" data-mode="agent">WorkBuddy 任务</button>
+  </div>
+
+  <div class="comparison-output" role="tabpanel" data-panel="chat">
+    <div class="wb-card">
+      <h3>它告诉你怎么做</h3>
+      <p>“你可以先提取会议主题，再整理关键结论和待办事项。”</p>
+      <p class="wb-status warning">停在建议：文件还要你自己打开、整理和保存。</p>
+    </div>
+  </div>
+
+  <div class="comparison-output" role="tabpanel" data-panel="agent" hidden>
+    <ol class="agent-steps">
+      <li><span>1</span><div><strong>理解目标</strong><p>确认输入文件、输出格式和验收标准。</p></div></li>
+      <li><span>2</span><div><strong>拟定计划</strong><p>读取记录、提取事实、生成纪要、保存文件。</p></div></li>
+      <li><span>3</span><div><strong>请求确认</strong><p>让你先看计划和文件范围。</p></div></li>
+      <li><span>4</span><div><strong>生成产物</strong><p>交付 <code>meeting-summary.md</code>。</p></div></li>
+      <li><span>5</span><div><strong>人工验收</strong><p>你检查内容、格式和保存位置。</p></div></li>
+    </ol>
+    <p class="wb-status success">走到交付：但最后的“合格”仍由你判断。</p>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-agent-chat-lab]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const mode = tab.dataset.mode;
+        tabs.forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.panel !== mode;
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .comparison-output {
+    margin-top: var(--space-4);
+  }
+
+  .agent-steps {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .agent-steps li {
+    display: grid;
+    grid-template-columns: var(--control-height) 1fr;
+    gap: var(--space-3);
+    align-items: start;
+  }
+
+  .agent-steps li > span {
+    display: grid;
+    place-items: center;
+    inline-size: var(--control-height);
+    block-size: var(--control-height);
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-info);
+    color: var(--color-text-info);
+    font-family: var(--font-mono);
+  }
+
+  .agent-steps p {
+    margin: var(--space-1) 0 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+</style>

@@ -1,0 +1,142 @@
+<section class="wb-lab" data-prompt-builder>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 07</span>
+    <h2 class="wb-lab__title">把“帮我做一下”补成可执行任务</h2>
+    <p class="wb-lab__description">每补齐一个要素得 20 分。目标不是写长，而是减少猜测。</p>
+  </header>
+
+  <div class="prompt-layout">
+    <form data-prompt-form>
+      <label class="wb-field">
+        <span>目标</span>
+        <input name="goal" value="把会议记录整理成正式会议纪要" />
+      </label>
+      <label class="wb-field">
+        <span>输入素材</span>
+        <input name="input" placeholder="例如：工作区里的 meeting-notes.txt" />
+      </label>
+      <label class="wb-field">
+        <span>处理要求</span>
+        <textarea name="steps" placeholder="例如：只使用原文明确出现的信息"></textarea>
+      </label>
+      <label class="wb-field">
+        <span>输出格式</span>
+        <input name="output" placeholder="例如：meeting-summary.md" />
+      </label>
+      <label class="wb-field">
+        <span>验收标准</span>
+        <textarea name="acceptance" placeholder="例如：包含议题、结论、负责人和截止时间"></textarea>
+      </label>
+    </form>
+
+    <aside class="prompt-result">
+      <div class="score-row">
+        <span>任务清晰度</span>
+        <strong data-score>20 / 100</strong>
+      </div>
+      <div class="wb-progress" aria-hidden="true"><span data-score-bar></span></div>
+      <p class="wb-status" aria-live="polite" data-missing>还缺：素材、步骤、输出、验收。</p>
+      <button type="button" class="primary" data-generate>生成完整指令</button>
+      <pre hidden data-output><code></code></pre>
+      <button type="button" hidden data-copy>复制这条指令</button>
+      <p class="copy-status" aria-live="polite" data-copy-status></p>
+    </aside>
+  </div>
+</section>
+
+<script>
+  import { buildPrompt, scorePromptDraft } from '../../lib/workbuddy-labs';
+
+  document.querySelectorAll<HTMLElement>('[data-prompt-builder]').forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>('[data-prompt-form]');
+    const score = root.querySelector<HTMLElement>('[data-score]');
+    const scoreBar = root.querySelector<HTMLElement>('[data-score-bar]');
+    const missing = root.querySelector<HTMLElement>('[data-missing]');
+    const generate = root.querySelector<HTMLButtonElement>('[data-generate]');
+    const output = root.querySelector<HTMLElement>('[data-output]');
+    const outputCode = output?.querySelector('code');
+    const copy = root.querySelector<HTMLButtonElement>('[data-copy]');
+    const copyStatus = root.querySelector<HTMLElement>('[data-copy-status]');
+    if (!form || !score || !scoreBar || !missing || !generate || !output || !outputCode || !copy || !copyStatus) return;
+
+    const draft = () => {
+      const data = new FormData(form);
+      return {
+        goal: String(data.get('goal') ?? ''),
+        input: String(data.get('input') ?? ''),
+        steps: String(data.get('steps') ?? ''),
+        output: String(data.get('output') ?? ''),
+        acceptance: String(data.get('acceptance') ?? ''),
+      };
+    };
+
+    const renderScore = () => {
+      const result = scorePromptDraft(draft());
+      score.textContent = `${result.score} / 100`;
+      scoreBar.style.setProperty('--progress', `${result.score}%`);
+      scoreBar.parentElement?.style.setProperty('--progress', `${result.score}%`);
+      missing.textContent = result.missing.length
+        ? `还缺：${result.missing.join('、')}。`
+        : '五个要素齐全，可以生成指令。';
+      missing.className = `wb-status ${result.missing.length ? '' : 'success'}`;
+    };
+
+    form.addEventListener('input', renderScore);
+    generate.addEventListener('click', () => {
+      const prompt = buildPrompt(draft());
+      outputCode.textContent = prompt || '请先填写至少一个要素。';
+      output.hidden = false;
+      copy.hidden = !prompt;
+      copyStatus.textContent = '';
+    });
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(outputCode.textContent ?? '');
+        copyStatus.textContent = '已复制。请在 WorkBuddy 中粘贴前再读一遍。';
+      } catch {
+        copyStatus.textContent = '浏览器没有允许自动复制，请手动选择上方指令。';
+      }
+    });
+    renderScore();
+  });
+</script>
+
+<style>
+  .prompt-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+
+  .prompt-result {
+    align-self: start;
+    padding: var(--space-4);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg);
+  }
+
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+
+  .prompt-result pre {
+    margin-top: var(--space-4);
+    white-space: pre-wrap;
+  }
+
+  .copy-status {
+    margin: var(--space-2) 0 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 40rem) {
+    .prompt-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,48 @@
+---
+slug: "install-workbuddy"
+title: "下载、安装、登录与版本核对"
+stage: 1
+order: 1
+summary: "只从官方入口下载，选对系统版本，完成扫码登录和第一次更新检查。"
+updated: 2026-07-23
+verified: 2026-07-23
+verified_version: "WorkBuddy 5.2.x"
+estimated_reading_minutes: 8
+lesson_goal: "独立完成 Windows 或 macOS 安装，并能确认自己没有下载错版本。"
+core_component: "InstallWizardLab"
+sources:
+  - label: "WorkBuddy 官方第一次任务"
+    url: "https://www.codebuddy.cn/docs/workbuddy/FirstTask"
+  - label: "WorkBuddy 官方下载页"
+    url: "https://www.codebuddy.cn/work/"
+takeaways:
+  - "下载只走官方页面，不从网盘或陌生转载站拿安装包。"
+  - "macOS 要先分清 Apple 芯片和 Intel，Windows 要确认系统版本。"
+  - "第一次只用内置模型，先减少 API Key 和第三方接口这些变量。"
+---
+
+这一步很像装一个普通办公软件。真正需要你小心的不是点击“下一步”，而是下载来源和系统版本。
+
+Windows 需要 Windows 10 及以上。macOS 需要先看“关于本机”，确认芯片写的是 Apple M 系列还是 Intel。两种 Mac 的安装包不同。
+
+<InstallWizardLab />
+
+## 现在应该看到什么
+
+安装后打开 WorkBuddy，点击登录会跳到浏览器完成微信扫码。授权成功后，浏览器会把你带回客户端。
+
+进入头像菜单执行“检查更新”。如果提示已经是最新版本，安装环节才算结束。
+
+## 常见卡点
+
+### 扫码后没有回到客户端
+
+先不要重复安装。检查浏览器是否拦截了“打开 WorkBuddy”的提示，再回到客户端看登录状态。
+
+### Mac 提示无法打开
+
+先确认安装包是否匹配芯片；然后从系统设置的隐私与安全页面查看是否有明确的拦截说明。不要通过关闭整套系统安全保护来解决。
+
+### 要不要马上接第三方模型
+
+不要。先用内置模型跑通第一单。等你能判断问题出在任务、权限还是模型时，再增加第三方配置。

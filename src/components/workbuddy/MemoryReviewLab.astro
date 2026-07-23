@@ -1,0 +1,111 @@
+---
+const memories = [
+  {
+    id: 'stable',
+    text: '回答使用简体中文，先给结论。',
+    correct: 'keep',
+    reason: '这是稳定、长期有效的表达偏好，可以保留。',
+  },
+  {
+    id: 'outdated',
+    text: '当前项目的周报必须在 2026 年 6 月 30 日前交付。',
+    correct: 'edit',
+    reason: '截止日期已经过期，应改成仍然有效的项目规则或删除。',
+  },
+  {
+    id: 'private',
+    text: '我的家庭住址和门禁信息是……',
+    correct: 'delete',
+    reason: '任务不需要这类敏感信息，应删除并避免再次提交。',
+  },
+  {
+    id: 'unverified',
+    text: '客户已经批准最终预算。',
+    correct: 'delete',
+    reason: '未经核验的关键事实不应作为长期记忆继续影响任务。',
+  },
+];
+---
+<section class="wb-lab" data-memory-lab data-memories={JSON.stringify(memories)}>
+  <header class="wb-lab__header">
+    <span class="wb-lab__eyebrow">互动 09</span>
+    <h2 class="wb-lab__title">替四条记忆做体检</h2>
+    <p class="wb-lab__description">记忆不是档案馆。留下长期有用的，改掉过时的，删除不该保存的。</p>
+  </header>
+
+  <div class="memory-list">
+    {memories.map((memory) => (
+      <article class="wb-card" data-memory-id={memory.id}>
+        <p>{memory.text}</p>
+        <label class="wb-field">
+          <span>你的处理</span>
+          <select>
+            <option value="">请选择</option>
+            <option value="keep">保留</option>
+            <option value="edit">改写</option>
+            <option value="delete">删除</option>
+          </select>
+        </label>
+        <p class="memory-feedback" aria-live="polite"></p>
+      </article>
+    ))}
+  </div>
+
+  <button type="button" class="primary" data-check-memory>检查我的选择</button>
+  <p class="wb-status" aria-live="polite" data-memory-status>还没有检查。</p>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-memory-lab]').forEach((root) => {
+    const memories = JSON.parse(root.dataset.memories ?? '[]') as Array<{
+      id: string;
+      correct: string;
+      reason: string;
+    }>;
+    const button = root.querySelector<HTMLButtonElement>('[data-check-memory]');
+    const status = root.querySelector<HTMLElement>('[data-memory-status]');
+    if (!button || !status) return;
+
+    button.addEventListener('click', () => {
+      let correctCount = 0;
+      memories.forEach((memory) => {
+        const card = root.querySelector<HTMLElement>(`[data-memory-id="${memory.id}"]`);
+        const select = card?.querySelector<HTMLSelectElement>('select');
+        const feedback = card?.querySelector<HTMLElement>('.memory-feedback');
+        if (!card || !select || !feedback) return;
+        const correct = select.value === memory.correct;
+        if (correct) correctCount += 1;
+        card.classList.toggle('selected', correct);
+        feedback.textContent = `${correct ? '判断正确。' : '再想想。'}${memory.reason}`;
+      });
+      status.textContent = correctCount === memories.length
+        ? '记忆体检完成：四条都处理正确。'
+        : `答对 ${correctCount} / ${memories.length} 条。`;
+      status.className = `wb-status ${correctCount === memories.length ? 'success' : 'warning'}`;
+    });
+  });
+</script>
+
+<style>
+  .memory-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .memory-list p {
+    margin-bottom: var(--space-3);
+  }
+
+  .memory-feedback {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 40rem) {
+    .memory-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

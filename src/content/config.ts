@@ -6,12 +6,22 @@ const chapters = defineCollection({
   schema: z.object({
     slug: z.string(),
     title: z.string(),
-    stage: z.number(),
-    order: z.number(),
+    stage: z.number().int().min(0).max(4),
+    order: z.number().int().min(0).max(10),
     summary: z.string(),
     updated: z.coerce.date(),
-    estimated_reading_minutes: z.number().optional(),
-    components: z.array(z.string()).optional(),
+    verified: z.coerce.date(),
+    verified_version: z.string(),
+    estimated_reading_minutes: z.number().int().positive(),
+    lesson_goal: z.string(),
+    core_component: z.string(),
+    sources: z.array(
+      z.object({
+        label: z.string(),
+        url: z.string().url(),
+      }),
+    ).min(1),
+    takeaways: z.array(z.string()).min(2).max(5),
   }),
 });
 

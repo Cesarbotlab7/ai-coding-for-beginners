@@ -1,174 +1,431 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import AIIntroSection from '../components/AIIntroSection.astro';
+import { CURRICULUM, STAGES } from '../lib/curriculum';
 
 const allChapters = await getCollection('chapters');
-const chapters = allChapters.sort((a, b) => {
-  if (a.data.stage !== b.data.stage) return a.data.stage - b.data.stage;
-  return a.data.order - b.data.order;
+const chapterBySlug = new Map(allChapters.map((chapter) => [chapter.data.slug, chapter]));
+const chapters = CURRICULUM.map((lesson) => {
+  const chapter = chapterBySlug.get(lesson.slug);
+  if (!chapter) throw new Error(`课程缺少章节：${lesson.slug}`);
+  return chapter;
 });
-
-const stageLabels: Record<number, string> = {
-  0: '引子',
-  1: '阶段一·地图',
-  2: '阶段二·玩家',
-  3: '阶段三·动手',
-};
-
-const stages = [0, 1, 2, 3];
 ---
-<BaseLayout title="AI编程入门">
-  <main class="home">
+<BaseLayout title="从安装到自动化" description="面向完全零基础用户的 WorkBuddy 交互式保姆级入门教程。">
+  <main class="home" id="main-content">
     <section class="hero">
-      <h1 class="hero-title">AI 编程入门</h1>
-      <p class="tagline">写给完全不会写代码、但很想用 AI 做产品的你</p>
-      <p class="sub">
-        一个金融背景的非科班，用 Claude Code 自学做产品的过程中，
-        写下的 10 章入门教程。每章都有可以动手玩的交互。
+      <p class="eyebrow">零基础 · 可交互 · 安全优先</p>
+      <h1>WorkBuddy 保姆级入门教程</h1>
+      <p class="tagline">不是读完一份功能说明，而是亲手跑通第一单。</p>
+      <p class="hero-copy">
+        从下载安装到工作区、Plan、产物验收、Skill、手机助理和自动化。
+        每个单元都有一个可以直接玩的模拟实验，不会真实修改你的电脑。
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="/chapter/what-is-workbuddy">从单元 0 开始</a>
+        <a class="button" href="#curriculum">查看课程地图</a>
+      </div>
+    </section>
+
+    <section class="outcomes" aria-labelledby="outcomes-title">
+      <div>
+        <p class="section-label">第一次交付</p>
+        <h2 id="outcomes-title">把会议记录变成正式纪要</h2>
+        <p>独立工作区、Plan、默认权限、产物和人工验收，一次走完。</p>
+      </div>
+      <div>
+        <p class="section-label">毕业任务</p>
+        <h2>每日 AI 资讯早报</h2>
+        <p>先手动跑通，再接手机查看、定时执行和历史排错。</p>
+      </div>
+    </section>
+
+    <section class="progress-card" data-course-progress data-total={chapters.length}>
+      <div class="progress-copy">
+        <div>
+          <p class="section-label">这台设备的学习进度</p>
+          <h2><span data-completed-count>0</span> / {chapters.length} 个单元已完成</h2>
+        </div>
+        <div class="progress-actions">
+          <a class="button primary" href="/chapter/what-is-workbuddy" data-continue-link>继续学习</a>
+          <button type="button" data-reset-progress>重置进度</button>
+        </div>
+      </div>
+      <div
+        class="course-progress-bar"
+        role="progressbar"
+        aria-label="课程完成进度"
+        aria-valuemin="0"
+        aria-valuemax={chapters.length}
+        aria-valuenow="0"
+      >
+        <span></span>
+      </div>
+      <p class="progress-note" aria-live="polite" data-progress-note>
+        进度只保存在当前浏览器，不会上传。
       </p>
     </section>
 
-    <AIIntroSection />
+    <section class="curriculum" id="curriculum">
+      <header class="section-header">
+        <p class="section-label">课程地图</p>
+        <h2>5 个阶段，11 个单元</h2>
+        <p>按顺序学最稳。你也可以直接进入当前最需要的单元。</p>
+      </header>
 
-    <section class="curriculum">
-      {stages.map(stage => {
-        const stageChapters = chapters.filter(c => c.data.stage === stage);
-        if (stageChapters.length === 0) return null;
+      {STAGES.map((stage) => {
+        const stageChapters = chapters.filter((chapter) => chapter.data.stage === stage.id);
         return (
-          <div class="stage-group">
-            <h2 class="stage-label">{stageLabels[stage]}</h2>
+          <section class="stage-group" aria-labelledby={`stage-${stage.id}`}>
+            <header class="stage-header">
+              <span class="stage-number">{String(stage.id).padStart(2, '0')}</span>
+              <div>
+                <h3 id={`stage-${stage.id}`}>{stage.label}</h3>
+                <p>{stage.description}</p>
+              </div>
+            </header>
             <div class="chapter-cards">
-              {stageChapters.map(ch => (
-                <a href={`/chapter/${ch.data.slug}`} class="chapter-card">
-                  <span class="chapter-num">第 {ch.data.order} 章</span>
-                  <h3 class="chapter-title">{ch.data.title}</h3>
-                  <p class="chapter-summary">{ch.data.summary}</p>
-                  {ch.data.estimated_reading_minutes && (
-                    <span class="chapter-meta">约 {ch.data.estimated_reading_minutes} 分钟</span>
-                  )}
+              {stageChapters.map((chapter) => (
+                <a
+                  href={`/chapter/${chapter.data.slug}`}
+                  class="chapter-card"
+                  data-lesson-card
+                  data-slug={chapter.data.slug}
+                >
+                  <div class="card-topline">
+                    <span class="chapter-num">单元 {chapter.data.order}</span>
+                    <span class="completion-mark" data-completion-mark>未完成</span>
+                  </div>
+                  <h4>{chapter.data.title}</h4>
+                  <p>{chapter.data.summary}</p>
+                  <span class="chapter-meta">约 {chapter.data.estimated_reading_minutes} 分钟</span>
                 </a>
               ))}
             </div>
-          </div>
+          </section>
         );
       })}
     </section>
 
-    <footer class="about">
-      <p>作者：一个用 AI 自学做产品的金融背景小白 · 杭州</p>
+    <section class="source-note">
+      <p class="section-label">事实来源</p>
+      <h2>教程不是照搬一篇文章</h2>
+      <p>
+        操作事实优先使用
+        <a href="https://www.codebuddy.cn/docs/workbuddy/" target="_blank" rel="noreferrer">WorkBuddy 官方文档</a>
+        和真实客户端核验；教学顺序参考
+        <a href="https://x.com/XiaohuiAI666/status/2071830585216291050" target="_blank" rel="noreferrer">程序员小灰上篇</a>
+        与
+        <a href="https://x.com/XiaohuiAI666/status/2072156656323232245" target="_blank" rel="noreferrer">完结篇</a>。
+        每章都标明核验日期和版本。
+      </p>
+    </section>
+
+    <footer class="site-footer">
+      <p>作者：César · 面向完全零基础用户的独立教程</p>
+      <p>内容版权所有；示例数据均为虚构，不构成法律、财务或其他专业意见。</p>
     </footer>
   </main>
 </BaseLayout>
 
+<script define:vars={{ curriculum: CURRICULUM }}>
+  const STORAGE_KEY = 'workbuddy-course-progress-v1';
+  const root = document.querySelector('[data-course-progress]');
+  const cards = [...document.querySelectorAll('[data-lesson-card]')];
+  const completedCount = root?.querySelector('[data-completed-count]');
+  const continueLink = root?.querySelector('[data-continue-link]');
+  const resetButton = root?.querySelector('[data-reset-progress]');
+  const progressBar = root?.querySelector('[role="progressbar"]');
+  const progressFill = progressBar?.querySelector('span');
+  const progressNote = root?.querySelector('[data-progress-note]');
+  let resetArmed = false;
+
+  const readProgress = () => {
+    try {
+      const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+      return Array.isArray(value) ? value.filter((item) => typeof item === 'string') : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const renderProgress = () => {
+    const completed = new Set(readProgress());
+    const knownCompleted = curriculum.filter((lesson) => completed.has(lesson.slug));
+    const nextLesson = curriculum.find((lesson) => !completed.has(lesson.slug)) ?? curriculum.at(-1);
+    const percentage = curriculum.length ? (knownCompleted.length / curriculum.length) * 100 : 0;
+
+    if (completedCount) completedCount.textContent = String(knownCompleted.length);
+    if (continueLink && nextLesson) continueLink.href = `/chapter/${nextLesson.slug}`;
+    if (progressBar) progressBar.setAttribute('aria-valuenow', String(knownCompleted.length));
+    if (progressFill) progressFill.style.setProperty('--progress', `${percentage}%`);
+    if (progressNote) {
+      progressNote.textContent = knownCompleted.length === curriculum.length
+        ? '全部完成。你可以随时回到任意单元复习。'
+        : '进度只保存在当前浏览器，不会上传。';
+    }
+
+    cards.forEach((card) => {
+      const slug = card.getAttribute('data-slug');
+      const isCompleted = Boolean(slug && completed.has(slug));
+      card.classList.toggle('completed', isCompleted);
+      const mark = card.querySelector('[data-completion-mark]');
+      if (mark) mark.textContent = isCompleted ? '已完成' : '未完成';
+    });
+  };
+
+  resetButton?.addEventListener('click', () => {
+    if (!resetArmed) {
+      resetArmed = true;
+      resetButton.textContent = '再点一次确认重置';
+      if (progressNote) progressNote.textContent = '再次点击才会清空当前浏览器的学习进度。';
+      return;
+    }
+    localStorage.removeItem(STORAGE_KEY);
+    resetArmed = false;
+    resetButton.textContent = '重置进度';
+    renderProgress();
+  });
+
+  renderProgress();
+</script>
+
 <style>
   .home {
-    max-width: 880px;
+    max-width: var(--home-width);
     margin: 0 auto;
-    padding: var(--space-7) var(--space-5);
+    padding: var(--space-8) var(--space-5);
   }
 
   .hero {
+    max-width: var(--content-width);
     margin-bottom: var(--space-8);
-    padding-bottom: var(--space-7);
-    border-bottom: 0.5px solid var(--color-border);
   }
 
-  .hero-title {
-    font-size: var(--text-2xl);
+  .eyebrow,
+  .section-label {
+    margin-bottom: var(--space-2);
+    color: var(--color-text-info);
+    font-size: var(--text-xs);
     font-weight: var(--font-medium);
-    margin: 0 0 var(--space-4);
+  }
+
+  .hero h1 {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-3xl);
   }
 
   .tagline {
-    font-size: var(--text-lg);
+    margin-bottom: var(--space-3);
     color: var(--color-text-secondary);
-    margin: 0 0 var(--space-3);
-    line-height: 1.5;
+    font-size: var(--text-xl);
   }
 
-  .sub {
-    font-size: var(--text-base);
-    color: var(--color-text-tertiary);
-    margin: 0;
-    line-height: 1.75;
+  .hero-copy {
+    color: var(--color-text-secondary);
   }
 
-  .curriculum {
+  .hero-actions,
+  .progress-actions {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-7);
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
-  .stage-label {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
+  .button {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .outcomes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+  }
+
+  .outcomes > div,
+  .progress-card,
+  .source-note {
+    padding: var(--space-5);
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-bg-primary);
+  }
+
+  .outcomes h2,
+  .progress-card h2,
+  .source-note h2 {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-lg);
+  }
+
+  .outcomes p:last-child,
+  .source-note p:last-child {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+
+  .progress-card {
+    margin-bottom: var(--space-8);
+  }
+
+  .progress-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .course-progress-bar {
+    height: var(--progress-height);
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-tertiary);
+  }
+
+  .course-progress-bar span {
+    display: block;
+    width: var(--progress, 0%);
+    height: 100%;
+    background: var(--color-text-info);
+    transition: width var(--transition-base);
+  }
+
+  .progress-note {
+    margin: var(--space-2) 0 0;
     color: var(--color-text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin: 0 0 var(--space-4);
+    font-size: var(--text-xs);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .section-header h2 {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-2xl);
+  }
+
+  .section-header p:last-child {
+    color: var(--color-text-secondary);
+  }
+
+  .stage-group {
+    margin-bottom: var(--space-7);
+  }
+
+  .stage-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .stage-number {
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .stage-header h3 {
+    font-size: var(--text-md);
+  }
+
+  .stage-header p {
+    margin: var(--space-1) 0 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
   }
 
   .chapter-cards {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-3);
   }
 
   .chapter-card {
     display: block;
     padding: var(--space-5);
-    border: 0.5px solid var(--color-border);
+    border: var(--border-hairline) solid var(--color-border);
     border-radius: var(--radius-lg);
-    text-decoration: none;
-    color: var(--color-text-primary);
     background: var(--color-bg-primary);
-    transition: background-color 0.12s;
+    color: var(--color-text-primary);
+    text-decoration: none;
   }
 
   .chapter-card:hover {
     background: var(--color-bg-secondary);
   }
 
-  .chapter-num {
-    font-size: var(--text-xs);
-    color: var(--color-text-tertiary);
-    font-family: var(--font-mono);
+  .chapter-card.completed {
+    border-color: var(--color-text-success);
   }
 
-  .chapter-title {
-    font-size: var(--text-md);
-    font-weight: var(--font-medium);
-    margin: var(--space-2) 0;
+  .card-topline {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
   }
 
-  .chapter-summary {
-    font-size: var(--text-sm);
-    color: var(--color-text-secondary);
-    margin: 0 0 var(--space-2);
-    line-height: 1.6;
-  }
-
+  .chapter-num,
+  .completion-mark,
   .chapter-meta {
+    color: var(--color-text-tertiary);
     font-size: var(--text-xs);
-    color: var(--color-text-tertiary);
   }
 
-  .about {
-    margin-top: var(--space-8);
-    padding-top: var(--space-6);
-    border-top: 0.5px solid var(--color-border);
+  .chapter-card.completed .completion-mark {
+    color: var(--color-text-success);
+  }
+
+  .chapter-card h4 {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-md);
+  }
+
+  .chapter-card p {
+    margin-bottom: var(--space-3);
+    color: var(--color-text-secondary);
     font-size: var(--text-sm);
+  }
+
+  .source-note {
+    margin-top: var(--space-8);
+  }
+
+  .site-footer {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: var(--border-hairline) solid var(--color-border);
     color: var(--color-text-tertiary);
+    font-size: var(--text-sm);
   }
 
-  .about p {
-    margin: 0;
+  .site-footer p {
+    margin-bottom: var(--space-1);
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 40rem) {
     .home {
-      padding: var(--space-5) var(--space-4);
+      padding: var(--space-6) var(--page-gutter-mobile);
+    }
+
+    .hero h1 {
+      font-size: var(--text-2xl);
+    }
+
+    .outcomes,
+    .chapter-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .progress-copy {
+      align-items: stretch;
+      flex-direction: column;
     }
   }
 </style>
