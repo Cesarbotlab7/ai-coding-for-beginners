@@ -4,6 +4,8 @@ node_modules/
 # build output
 dist/
 .astro/
+test-results/
+playwright-report/
 
 # env files (keep .env.example in repo)
 .env

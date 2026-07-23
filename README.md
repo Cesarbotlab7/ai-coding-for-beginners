@@ -1,82 +1,76 @@
-# ai-coding-for-beginners
+# WorkBuddy 保姆级入门教程
 
-一个面向完全零基础小白的中文 AI 编程入门教程。
+一个面向完全零基础用户的中文交互教程：从下载安装到第一个可验收文件任务，再到 Skill、手机助理和自动化。
 
-## 系列定位
+## 课程结构
 
-如果你有一个想做的产品想法，但：
+- 5 个阶段
+- 11 个课程单元
+- 每个单元一个核心交互实验
+- 学习进度仅保存在浏览器本地
+- 所有练习使用虚构数据，不真实修改用户文件
 
-- 完全不会写代码
-- 听说过 AI 能帮人编程，但不知道从哪里开始
-- 一看到"前端后端数据库域名服务器"就头大
-
-这个系列就是为你写的。
+课程事实优先依据 WorkBuddy 官方文档和当前客户端核验；程序员小灰的两篇 X 长文用于教学顺序、案例和踩坑参考。每章 frontmatter 记录核验版本、日期和来源。
 
 ## 技术栈
 
-- **框架**：Astro
-- **托管**：腾讯云轻量应用服务器 + Nginx
-- **仓库**：GitHub 私有
-- **AI 协作**：Claude Code
+- Astro 5
+- MDX 4
+- 原生 JavaScript 交互
+- Vitest 单元测试
+- Playwright 端到端测试
+- 腾讯云轻量服务器 + Nginx 静态托管
+
+不引入 React、Vue 或 jQuery。
 
 ## 本地开发
 
-项目位于 `~/Projects/ai-coding-for-beginners`。
-
 ```bash
-cd ~/Projects/ai-coding-for-beginners
-
-# 安装依赖
 npm install
-
-# 启动本地开发服务器
 npm run dev
-
-# 生产构建
-npm run build
-
-# 本地预览构建产物
-npm run preview
 ```
 
-## 部署
+本地地址：`http://localhost:4321`
 
-第一阶段手动部署：
+本机使用 `curl` 访问开发服务器时，需要加 `--noproxy localhost`。
+
+## 验证
 
 ```bash
-# 本地推送
-git push origin main
-
-# SSH 到腾讯云轻量服务器
-ssh ubuntu@<公网IP>
-cd /var/www/ai-coding-for-beginners
-git pull
-npm ci
+npm run test:unit
 npm run build
-# Nginx 直接服务 dist/ 目录，无需 reload
+npm run test:e2e
+npm run test:all
 ```
 
 ## 项目结构
 
-```
-ai-coding-for-beginners/
-├── CLAUDE.md            AI 工作协议
-├── SPEC.md              功能规格
-├── DESIGN.md            设计系统
-├── PLAN.md              开发阶段计划
-├── content/             章节内容（Markdown）
-├── src/                 Astro 源码
-└── scripts/             运维脚本
+```text
+content/chapters/          11 个课程 MDX
+src/components/workbuddy/  课程交互实验
+src/lib/curriculum.ts      阶段和顺序 SSOT
+src/lib/workbuddy-labs.ts  可测试的交互判断逻辑
+src/pages/                 首页和章节路由
+tests/unit/                课程与逻辑单测
+tests/e2e/                 浏览器主路径
 ```
 
-详见 `CLAUDE.md`。
+产品、设计和执行状态分别见：
+
+- `SPEC.md`
+- `DESIGN.md`
+- `PLAN.md`
+
+## 部署
+
+部署仍沿用现有腾讯云/Nginx 链路：
+
+```bash
+npm run deploy
+```
+
+该命令会触发 push 和远程构建，必须在获得明确确认后执行。
 
 ## 许可
 
 内容版权所有，代码采用 MIT 协议。
-
-## 作者
-
-César — 金融背景，正在学做产品。
-
-主开发机：Mac mini（同时作为本地 AI 服务器运行 OpenClaw）。
